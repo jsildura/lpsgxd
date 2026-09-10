@@ -1,6 +1,5 @@
 // Cloudflare Pages Functions: Shared Authentication Utilities
 
-const DEFAULT_PASSWORD = "lpsg@1231996";
 const AUTH_COOKIE_NAME = "lpsg_auth_session";
 
 /**
@@ -16,14 +15,14 @@ export async function computeAuthToken(password) {
 }
 
 /**
- * Gets the configured password from environment or fallback.
+ * Gets the configured password from environment variables.
  * @param {object} env Cloudflare environment bindings
  * @returns {string}
  */
 export function getAppPassword(env) {
-  return (env && env.APP_PASSWORD && typeof env.APP_PASSWORD === 'string' && env.APP_PASSWORD.trim()) 
+  return (env && env.APP_PASSWORD && typeof env.APP_PASSWORD === 'string') 
     ? env.APP_PASSWORD.trim() 
-    : DEFAULT_PASSWORD;
+    : "";
 }
 
 /**
@@ -50,11 +49,13 @@ export function parseCookies(request) {
  * @returns {Promise<boolean>}
  */
 export async function isAuthenticated(request, env) {
+  const appPassword = getAppPassword(env);
+  if (!appPassword) return false;
+
   const cookies = parseCookies(request);
   const sessionToken = cookies[AUTH_COOKIE_NAME];
   if (!sessionToken) return false;
 
-  const appPassword = getAppPassword(env);
   const expectedToken = await computeAuthToken(appPassword);
   return sessionToken === expectedToken;
 }

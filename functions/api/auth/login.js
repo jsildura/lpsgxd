@@ -10,6 +10,19 @@ export async function onRequestPost(context) {
 
     const expectedPassword = getAppPassword(env);
 
+    if (!expectedPassword) {
+      return new Response(
+        JSON.stringify({ error: "Server configuration error: APP_PASSWORD is not configured in Cloudflare environment variables." }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+    }
+
     if (!providedPassword || providedPassword !== expectedPassword) {
       return new Response(
         JSON.stringify({ error: "Incorrect password. Please try again." }),
