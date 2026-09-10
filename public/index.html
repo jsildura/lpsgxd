@@ -163,6 +163,32 @@
       transform: translateY(0);
     }
 
+    /* Lock Workspace Header Button */
+    .btn-lock-header {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-lock-header:hover {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #ef4444;
+      transform: translateY(-1px);
+    }
+
+    .btn-lock-header:active {
+      transform: translateY(0);
+    }
+
     .cookie-dot {
       width: 7px;
       height: 7px;
@@ -1362,6 +1388,17 @@
           <span class="cookie-dot" id="header-cookie-dot" aria-hidden="true"></span>
         </button>
 
+        <!-- Lock Workspace Button -->
+        <button type="button" class="btn-lock-header" id="lock-app-btn" onclick="lockWorkspace()"
+          title="Lock Workspace" aria-label="Lock Workspace">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+
         <div class="status-indicator-pill">
           <span class="pulse-dot" aria-hidden="true"></span>
           <span>CDN Direct Engine</span>
@@ -2390,6 +2427,15 @@
       return String(str)
         .replace(/"/g, '&quot;')
         .replace(/'/g, '\\\'');
+    }
+
+    async function lockWorkspace() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (e) {
+        console.error('Logout error:', e);
+      }
+      window.location.reload();
     }
   </script>
 </body>

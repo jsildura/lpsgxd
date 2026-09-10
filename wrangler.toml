@@ -3,3 +3,6 @@ compatibility_date = "2024-01-01"
 
 [pages]
 directory = "public"
+
+[vars]
+APP_PASSWORD = "lpsg@1231996"
