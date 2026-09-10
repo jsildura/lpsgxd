@@ -5,6 +5,7 @@ import { isAuthenticated } from "./_auth.js";
 const PUBLIC_PATHS = new Set([
   "/api/auth/login",
   "/api/auth/logout",
+  "/api/download",
   "/logo.png",
   "/favicon.ico",
 ]);
