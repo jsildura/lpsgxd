@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Cloudflare Wrangler build output and state
+.wrangler/
+
+# Sensitive session & cookie files
+cookies/
+*.txt
+!README.md
+
+# Scratch scripts & debug files
+scratch/
+
+# Logs
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE configuration
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.*

@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LPSG Fetcher</title>
+  <meta name="description"
+    content="Modern media workspace to extract direct CDN video streams and assets from LPSG forum threads.">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #1a1a1e;
+      --bg-surface: #222228;
+      --bg-surface-elevated: #292932;
+      --bg-surface-subtle: #161619;
+      --bg-glass: rgba(34, 34, 40, 0.82);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --border-dashed: rgba(255, 255, 255, 0.18);
+      --accent-primary: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-active: #1d4ed8;
+      --accent-subtle: rgba(59, 130, 246, 0.14);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --badge-mp4: #10b981;
+      --badge-mp4-bg: rgba(16, 185, 129, 0.12);
+      --badge-mov: #f59e0b;
+      --badge-mov-bg: rgba(245, 158, 11, 0.14);
+      --badge-webm: #8b5cf6;
+      --badge-webm-bg: rgba(139, 92, 246, 0.12);
+      --badge-mkv: #f472b6;
+      --badge-mkv-bg: rgba(244, 114, 182, 0.12);
+      --badge-avi: #38bdf8;
+      --badge-avi-bg: rgba(56, 189, 248, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+      --transition-smooth: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-canvas);
+      background-image:
+        radial-gradient(ellipse 60% 40% at 50% -10%, rgba(59, 130, 246, 0.08), transparent 80%),
+        radial-gradient(circle at 100% 100%, rgba(22, 22, 26, 0.8), transparent 50%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: var(--text-primary);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Workspace Header */
+    .workspace-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .brand-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Brand Logo using logo.png */
+    .brand-logo-img {
+      height: 26px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      filter: brightness(0) invert(1);
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-titles h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .brand-titles p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .header-actions-cluster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Header Cookies Modal Trigger Button */
+    .btn-cookies-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-cookies-header:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.22);
+      transform: translateY(-1px);
+    }
+
+    .btn-cookies-header:active {
+      transform: translateY(0);
+    }
+
+    .cookie-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #64748b;
+      transition: var(--transition-smooth);
+    }
+
+    .cookie-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .status-indicator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #34d399;
+      letter-spacing: 0.02em;
+    }
+
+    .status-indicator-pill .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: statusPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes statusPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.85);
+      }
+    }
+
+    /* Modal Backdrop & Dialog */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 14, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: 640px;
+      animation: modalZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalZoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* Session Panel inside Modal */
+    .session-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .session-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .session-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .session-title {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .session-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .session-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .session-badge.disconnected {
+      background: rgba(100, 116, 139, 0.14);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, 0.25);
+    }
+
+    .session-badge.connected {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .session-badge.verifying {
+      background: rgba(59, 130, 246, 0.12);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .session-badge .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-close-modal:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Dashed Dropzone */
+    .cookie-dropzone {
+      border: 1.5px dashed var(--border-dashed);
+      border-radius: var(--radius-md);
+      padding: 26px 20px;
+      background: rgba(18, 18, 22, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .cookie-dropzone:hover,
+    .cookie-dropzone.drag-over {
+      border-color: var(--accent-primary);
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    .dropzone-icon {
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .cookie-dropzone:hover .dropzone-icon {
+      transform: translateY(-2px);
+      color: var(--accent-primary);
+    }
+
+    .dropzone-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .dropzone-label strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .dropzone-subtext {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Actions below dropzone */
+    .session-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 4px;
+    }
+
+    .session-left-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-reconnect {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-reconnect:hover {
+      background: #32323c;
+      border-color: rgba(255, 255, 255, 0.24);
+      transform: translateY(-1px);
+    }
+
+    .btn-reconnect:active {
+      transform: translateY(0);
+    }
+
+    .btn-reconnect.loading .reconnect-icon {
+      animation: spin 0.8s linear infinite;
+    }
+
+    .session-status-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .session-status-text strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .btn-clear-session {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-clear-session:hover {
+      color: #f87171;
+    }
+
+    /* Ingestion Command Panel */
+    .ingestion-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-headline-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .panel-headline {
+      font-size: 1.22rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .panel-subline {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .command-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .command-input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+      height: 48px;
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0 10px 0 16px;
+      transition: var(--transition-smooth);
+    }
+
+    .command-input-container:focus-within {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-subtle);
+      background: #131316;
+    }
+
+    .input-icon-leading {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .command-input {
+      flex: 1;
+      height: 100%;
+      border: none;
+      background: transparent;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      outline: none;
+      min-width: 0;
+      padding: 0;
+    }
+
+    .command-input::placeholder {
+      color: #555562;
+    }
+
+    .input-action-cluster {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-icon-clear {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-icon-clear:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-icon-paste {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 7px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-icon-paste:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.06);
+    }
+
+    .btn-primary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 48px;
+      padding: 0 22px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--accent-primary);
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
+
+    .btn-primary-action:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+    }
+
+    .btn-primary-action:active {
+      background: var(--accent-active);
+      transform: translateY(0);
+    }
+
+    .btn-primary-action:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .kbd-shortcut {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      font-family: var(--font-mono);
+      opacity: 0.9;
+    }
+
+    .helper-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .cache-indicator-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cache-indicator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.1);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .cache-indicator-pill svg {
+      color: #60a5fa;
+    }
+
+    .btn-clear-cache {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 4px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-clear-cache:hover {
+      color: #f87171;
+    }
+
+    .helper-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .paste-chip {
+      background: transparent;
+      border: 1px dashed var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition-smooth);
+    }
+
+    .paste-chip:hover {
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+      background: var(--accent-subtle);
+    }
+
+    /* Status Notifications */
+    .status-banner {
+      display: none;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.4;
+      align-items: center;
+      gap: 12px;
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .status-banner.loading {
+      display: flex;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      color: #93c5fd;
+    }
+
+    .status-banner.error {
+      display: flex;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+    }
+
+    .status-banner.success {
+      display: flex;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #6ee7b7;
+    }
+
+    .status-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Results Header Bar */
+    .results-meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 4px 4px;
+      margin-bottom: 14px;
+    }
+
+    .results-meta-left,
+    .results-meta-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .cached-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-refetch {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-refetch:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .results-count-tag {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .results-count-tag span {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-copy-all {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-copy-all:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Media Results Workspace */
+    .results-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Empty Workspace State */
+    .workspace-empty-state {
+      padding: 44px 24px;
+      text-align: center;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .empty-state-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .empty-state-description {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      max-width: 440px;
+      line-height: 1.5;
+    }
+
+    .empty-state-specs {
+      display: flex;
+      gap: 16px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .spec-item {
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface-subtle);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Video Media Card */
+    .video-media-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .video-media-card:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+      background: var(--bg-surface-elevated);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .card-layout {
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    /* Video Poster Preview */
+    .media-preview-box {
+      width: 200px;
+      min-height: 130px;
+      flex-shrink: 0;
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f0f13;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .media-poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .media-preview-box:hover .media-poster-img {
+      transform: scale(1.04);
+    }
+
+    .play-action-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(18, 18, 22, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      transition: var(--transition-smooth);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .media-preview-box:hover .play-action-overlay {
+      background: var(--accent-primary);
+      border-color: transparent;
+      transform: translate(-50%, -50%) scale(1.1);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .preview-fallback-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--text-muted);
+      width: 100%;
+      height: 100%;
+      background: #141418;
+    }
+
+    /* Media Details Section */
+    .media-details {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .media-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .media-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .media-index-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .format-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .format-badge.type-mp4 {
+      background: var(--badge-mp4-bg);
+      color: var(--badge-mp4);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .format-badge.type-mov {
+      background: var(--badge-mov-bg);
+      color: var(--badge-mov);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .format-badge.type-webm {
+      background: var(--badge-webm-bg);
+      color: var(--badge-webm);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    .format-badge.type-mkv {
+      background: rgba(236, 72, 153, 0.12);
+      color: #f472b6;
+      border: 1px solid rgba(236, 72, 153, 0.25);
+    }
+
+    .format-badge.type-avi {
+      background: rgba(14, 165, 233, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(14, 165, 233, 0.25);
+    }
+
+    .media-hash-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Monospace Stream Endpoint Box */
+    .stream-endpoint-box {
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #93c5fd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .stream-endpoint-box:hover {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: #111114;
+    }
+
+    .stream-endpoint-url {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      direction: rtl;
+      text-align: left;
+    }
+
+    .stream-endpoint-copy-icon {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .stream-endpoint-box:hover .stream-endpoint-copy-icon {
+      color: var(--accent-primary);
+    }
+
+    /* Media Actions */
+    .media-actions-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-action-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface-elevated);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-action-tool:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-action-tool.copied {
+      background: rgba(16, 185, 129, 0.14);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-action-tool.btn-primary-action-tool {
+      background: var(--accent-subtle);
+      color: #60a5fa;
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-action-tool.btn-primary-action-tool:hover {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border-color: var(--accent-primary);
+    }
+
+    /* Floating Toast */
+    .modern-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(26, 26, 30, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-primary);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modern-toast.active {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Workspace Footer */
+    .workspace-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 8px 32px 8px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: 8px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Responsive Adaptations */
+    @media (max-width: 680px) {
+      body {
+        padding: 16px 12px;
+      }
+
+      .app-shell {
+        gap: 16px;
+      }
+
+      .workspace-header {
+        padding: 14px 16px;
+      }
+
+      .status-indicator-pill {
+        display: none;
+      }
+
+      .ingestion-panel {
+        padding: 20px 16px;
+      }
+
+      .card-layout {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .media-preview-box {
+        width: 100%;
+        height: 190px;
+      }
+
+      .command-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .command-input-container {
+        width: 100%;
+        flex: none;
+      }
+
+      .btn-primary-action {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .workspace-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .panel-subline,
+      .auth-status-hint,
+      p.empty-state-description {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- Header Navigation Bar -->
+    <header class="workspace-header">
+      <div class="brand-identity">
+        <!-- Official Logo as Brandmark -->
+        <img src="/logo.png" alt="LPSG" class="brand-logo-img">
+        <div class="brand-titles">
+          <h1>Fetcher</h1>
+        </div>
+      </div>
+      <div class="header-actions-cluster">
+        <!-- Cookies Modal Trigger Button -->
+        <button type="button" class="btn-cookies-header" id="open-cookies-btn" onclick="openCookiesModal()"
+          title="Manage LPSG Session Cookies">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span class="cookie-dot" id="header-cookie-dot" aria-hidden="true"></span>
+        </button>
+
+        <div class="status-indicator-pill">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>CDN Direct Engine</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Ingestion Command Panel -->
+    <section class="ingestion-panel">
+      <div class="panel-headline-group">
+        <h2 class="panel-headline">Extract Media Streams</h2>
+        <p class="panel-subline">Paste any LPSG thread URL or post permalink to resolve and access direct CDN media
+          attachments.</p>
+      </div>
+
+      <div class="command-row">
+        <div class="command-input-container">
+          <div class="input-icon-leading" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          <input type="text" id="thread-url" class="command-input"
+            placeholder="https://www.lpsg.com/threads/apex-muscle.11605521/post-199060711" autocomplete="off"
+            spellcheck="false" aria-label="LPSG Thread URL">
+          <div class="input-action-cluster">
+            <button type="button" class="btn-icon-clear" id="clear-btn" title="Clear input" aria-label="Clear input">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <button type="button" class="btn-icon-paste" id="paste-chip-btn" title="Paste from clipboard"
+              aria-label="Paste from clipboard">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-primary-action" id="fetch-btn" onclick="fetchVideos()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Fetch Videos</span>
+        </button>
+      </div>
+
+      <div class="helper-bar">
+        <div class="cache-indicator-group" id="cache-indicator-group" style="display:none;">
+          <span class="cache-indicator-pill">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span id="cache-count-text">0 cached threads</span>
+          </span>
+          <button type="button" class="btn-clear-cache" onclick="clearAllCache()" title="Clear cached thread results">
+            Clear
+          </button>
+        </div>
+        <div id="auth-status-hint">Guest access mode</div>
+      </div>
+    </section>
+
+    <!-- Dynamic Status Banner -->
+    <div class="status-banner" id="status" role="status" aria-live="polite"></div>
+
+    <!-- Video Results Primary Workspace -->
+    <main class="results-container" id="results">
+      <!-- Default Workspace Empty State -->
+      <div class="workspace-empty-state">
+        <div class="empty-state-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+        </div>
+        <div class="empty-state-title">Ready for Stream Extraction</div>
+        <p class="empty-state-description">Enter a forum thread or direct post URL above to inspect and extract
+          unthrottled CDN video attachments.</p>
+        <div class="empty-state-specs">
+          <div class="spec-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Bypasses player restrictions
+          </div>
+          <div class="spec-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Direct CDN origin URLs
+          </div>
+          <div class="spec-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            MP4 • MOV • WEBM • MKV
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="workspace-footer">
+      <div class="footer-left">
+        <span>Videos fetched directly from LPSG Edge CDN</span>
+        <span>•</span>
+        <span>No time restrictions apply</span>
+      </div>
+      <div class="footer-right">
+        <span>LPSG Fetcher Workspace</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Cookies Modal Dialog (pops out when Cookies button is clicked) -->
+  <div class="modal-backdrop" id="cookies-modal" style="display:none;" onclick="handleModalBackdropClick(event)"
+    role="dialog" aria-modal="true" aria-labelledby="session-title-label">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <section class="session-panel" aria-labelledby="session-title-label">
+        <div class="session-panel-header">
+          <div class="session-title-group">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-primary);">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span class="session-title" id="session-title-label">LPSG Session &amp; Cookies</span>
+          </div>
+          <div class="session-header-controls">
+            <div class="session-badge disconnected" id="session-status-badge">
+              <span class="badge-dot" aria-hidden="true"></span>
+              <span id="session-badge-text">Guest Mode</span>
+            </div>
+            <button type="button" class="btn-close-modal" onclick="closeCookiesModal()" title="Close dialog"
+              aria-label="Close dialog">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashed Dropzone -->
+        <div class="cookie-dropzone" id="cookie-dropzone" role="button" tabindex="0"
+          title="Click or drag cookies.txt to upload" aria-label="Drop cookies.txt here or click to browse">
+          <input type="file" id="cookie-file-input" accept=".txt,.json,text/plain" style="display:none;"
+            aria-hidden="true">
+          <div class="dropzone-icon" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="dropzone-label" id="dropzone-main-label">
+            Drop <strong>cookies.txt</strong> here or click to browse
+          </div>
+          <div class="dropzone-subtext" id="dropzone-sub-label">
+            Supports Netscape format exported from browser extensions
+          </div>
+        </div>
+
+        <!-- Actions below Dropzone -->
+        <div class="session-actions-bar">
+          <div class="session-left-actions">
+            <button type="button" class="btn-reconnect" id="reconnect-btn" onclick="reconnectSession()">
+              <svg class="reconnect-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>Reconnect</span>
+            </button>
+            <div class="session-status-text" id="session-info-detail">
+              <span>No cookies stored</span>
+            </div>
+          </div>
+          <button type="button" class="btn-clear-session" id="clear-session-btn" onclick="clearSessionCookies()"
+            style="display:none;">
+            Clear cookies
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('thread-url');
+    const fetchBtn = document.getElementById('fetch-btn');
+    const statusEl = document.getElementById('status');
+    const resultsEl = document.getElementById('results');
+    const clearBtn = document.getElementById('clear-btn');
+    const pasteChipBtn = document.getElementById('paste-chip-btn');
+    const authStatusHint = document.getElementById('auth-status-hint');
+
+    // Modal and Cookie Session Elements
+    const cookiesModal = document.getElementById('cookies-modal');
+    const headerCookieDot = document.getElementById('header-cookie-dot');
+    const cookieDropzone = document.getElementById('cookie-dropzone');
+    const cookieFileInput = document.getElementById('cookie-file-input');
+    const reconnectBtn = document.getElementById('reconnect-btn');
+    const sessionBadge = document.getElementById('session-status-badge');
+    const sessionBadgeText = document.getElementById('session-badge-text');
+    const sessionInfoDetail = document.getElementById('session-info-detail');
+    const clearSessionBtn = document.getElementById('clear-session-btn');
+    const dropzoneMainLabel = document.getElementById('dropzone-main-label');
+    const dropzoneSubLabel = document.getElementById('dropzone-sub-label');
+
+    let currentVideos = [];
+
+    // Modal Open / Close Logic
+    function openCookiesModal() {
+      cookiesModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCookiesModal() {
+      cookiesModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function handleModalBackdropClick(event) {
+      if (event.target === cookiesModal) {
+        closeCookiesModal();
+      }
+    }
+
+    // Close modal on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && cookiesModal.style.display === 'flex') {
+        closeCookiesModal();
+      }
+    });
+
+    // Initialize session state & cache on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      initSessionState();
+      updateCacheUI();
+    });
+
+    function initSessionState() {
+      const storedCookies = localStorage.getItem('lpsg_cookies');
+      const storedCount = localStorage.getItem('lpsg_cookies_count');
+      const storedUser = localStorage.getItem('lpsg_session_user');
+
+      if (storedCookies) {
+        updateSessionUI({
+          hasCookies: true,
+          count: storedCount || 'multiple',
+          user: storedUser || null,
+          verified: localStorage.getItem('lpsg_session_verified') === 'true'
+        });
+      } else {
+        updateSessionUI({ hasCookies: false });
+      }
+    }
+
+    function updateSessionUI(state) {
+      if (state.hasCookies) {
+        sessionBadge.className = state.verified ? 'session-badge connected' : 'session-badge verifying';
+        sessionBadgeText.textContent = state.verified ? 'Session Connected' : 'Cookies Stored';
+
+        const countText = state.count ? `${state.count} cookies active` : 'Active';
+        const userText = state.user ? ` • Logged in as ${state.user}` : '';
+        sessionInfoDetail.innerHTML = `<span><strong>${countText}</strong>${escapeHtml(userText)}</span>`;
+        clearSessionBtn.style.display = 'inline-block';
+
+        dropzoneMainLabel.innerHTML = `<strong>cookies.txt</strong> loaded (${state.count} cookies)`;
+        dropzoneSubLabel.textContent = 'Drop another file or click to update';
+        authStatusHint.textContent = state.user ? `Authenticated (${state.user})` : 'Authenticated mode';
+        headerCookieDot.className = 'cookie-dot connected';
+      } else {
+        sessionBadge.className = 'session-badge disconnected';
+        sessionBadgeText.textContent = 'Guest Mode';
+        sessionInfoDetail.innerHTML = `<span>No cookies stored</span>`;
+        clearSessionBtn.style.display = 'none';
+
+        dropzoneMainLabel.innerHTML = `Drop <strong>cookies.txt</strong> here or click to browse`;
+        dropzoneSubLabel.textContent = 'Supports Netscape format exported from browser extensions';
+        authStatusHint.textContent = 'Guest access mode';
+        headerCookieDot.className = 'cookie-dot';
+      }
+    }
+
+    // Cookie Dropzone Interaction
+    cookieDropzone.addEventListener('click', () => {
+      cookieFileInput.click();
+    });
+
+    cookieDropzone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        cookieFileInput.click();
+      }
+    });
+
+    cookieFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+        handleCookieFile(file);
+      }
+      cookieFileInput.value = '';
+    });
+
+    // Drag and Drop
+    ['dragenter', 'dragover'].forEach(eventName => {
+      cookieDropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        cookieDropzone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      cookieDropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        cookieDropzone.classList.remove('drag-over');
+      });
+    });
+
+    cookieDropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const file = dt.files && dt.files[0];
+      if (file) {
+        handleCookieFile(file);
+      }
+    });
+
+    function handleCookieFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        const parsed = parseCookieText(text);
+
+        if (!parsed.cookieStr) {
+          showToast('Could not extract cookies from file');
+          return;
+        }
+
+        // Store parsed cookies
+        localStorage.setItem('lpsg_cookies', parsed.cookieStr);
+        localStorage.setItem('lpsg_cookies_count', parsed.count);
+        if (parsed.userId) {
+          localStorage.setItem('lpsg_session_user', `User #${parsed.userId}`);
+        } else {
+          localStorage.removeItem('lpsg_session_user');
+        }
+        localStorage.removeItem('lpsg_session_verified');
+
+        updateSessionUI({
+          hasCookies: true,
+          count: parsed.count,
+          user: parsed.userId ? `User #${parsed.userId}` : null,
+          verified: false
+        });
+
+        showToast(`Loaded ${parsed.count} cookies! Connecting...`);
+        reconnectSession();
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCookieText(text) {
+      if (!text) return { cookieStr: '', count: 0, userId: null };
+
+      const trimmed = text.trim();
+      // Check if JSON format
+      if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          const list = Array.isArray(parsed) ? parsed : [parsed];
+          const valid = list.filter(c => c && c.name && c.value);
+          const cookieStr = valid.map(c => `${c.name}=${c.value}`).join('; ');
+          let userId = null;
+          const xfUser = valid.find(c => c.name === 'xf_user');
+          if (xfUser) {
+            const m = decodeURIComponent(xfUser.value).match(/^(\d+)/);
+            if (m) userId = m[1];
+          }
+          return { cookieStr, count: valid.length, userId };
+        } catch (err) { }
+      }
+
+      // Netscape or raw format
+      const lines = text.split(/\r?\n/);
+      const cookieMap = new Map();
+      let userId = null;
+
+      for (const line of lines) {
+        const l = line.trim();
+        if (!l) continue;
+
+        if (!l.startsWith('#')) {
+          const parts = l.split('\t');
+          if (parts.length >= 7) {
+            const name = parts[5].trim();
+            const value = parts[6].trim();
+            if (name && value) {
+              cookieMap.set(name, value);
+              if (name === 'xf_user') {
+                const m = decodeURIComponent(value).match(/^(\d+)/);
+                if (m) userId = m[1];
+              }
+            }
+            continue;
+          }
+        }
+
+        // Raw fallback
+        if (l.includes('=')) {
+          const clean = l.replace(/^cookie:\s*/i, '');
+          const pairs = clean.split(';');
+          for (const pair of pairs) {
+            const eqIdx = pair.indexOf('=');
+            if (eqIdx > 0) {
+              const k = pair.substring(0, eqIdx).trim();
+              const v = pair.substring(eqIdx + 1).trim();
+              if (k && v && !k.startsWith('#')) {
+                cookieMap.set(k, v);
+                if (k === 'xf_user') {
+                  const m = decodeURIComponent(v).match(/^(\d+)/);
+                  if (m) userId = m[1];
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const pairs = [];
+      for (const [k, v] of cookieMap.entries()) {
+        pairs.push(`${k}=${v}`);
+      }
+
+      return {
+        cookieStr: pairs.join('; '),
+        count: cookieMap.size,
+        userId
+      };
+    }
+
+    async function reconnectSession() {
+      const storedCookies = localStorage.getItem('lpsg_cookies');
+      if (!storedCookies) {
+        showToast('Please drop or select a cookies.txt file first');
+        return;
+      }
+
+      reconnectBtn.classList.add('loading');
+      reconnectBtn.disabled = true;
+      sessionBadge.className = 'session-badge verifying';
+      sessionBadgeText.textContent = 'Verifying...';
+
+      try {
+        const res = await fetch('/api/check-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cookies: storedCookies })
+        });
+
+        const data = await res.json();
+        const count = localStorage.getItem('lpsg_cookies_count') || '';
+
+        if (data.ok && (data.loggedIn || data.status === 200)) {
+          const user = data.username || (data.userId ? `User #${data.userId}` : 'Member');
+          localStorage.setItem('lpsg_session_verified', 'true');
+          if (data.username) {
+            localStorage.setItem('lpsg_session_user', data.username);
+          }
+
+          updateSessionUI({
+            hasCookies: true,
+            count,
+            user,
+            verified: true
+          });
+          showToast(`Connected to LPSG as ${user}`);
+        } else {
+          localStorage.setItem('lpsg_session_verified', 'false');
+          updateSessionUI({
+            hasCookies: true,
+            count,
+            user: null,
+            verified: false
+          });
+          showToast(data.error || 'Cookies stored, but session could not be verified');
+        }
+      } catch (err) {
+        showToast(`Connection check failed: ${err.message}`);
+      } finally {
+        reconnectBtn.classList.remove('loading');
+        reconnectBtn.disabled = false;
+      }
+    }
+
+    function clearSessionCookies() {
+      localStorage.removeItem('lpsg_cookies');
+      localStorage.removeItem('lpsg_cookies_count');
+      localStorage.removeItem('lpsg_session_user');
+      localStorage.removeItem('lpsg_session_verified');
+      updateSessionUI({ hasCookies: false });
+      showToast('Session cookies cleared — reverted to Guest mode');
+    }
+
+    // Toggle clear button visibility based on input value
+    input.addEventListener('input', () => {
+      clearBtn.style.display = input.value.trim() ? 'inline-flex' : 'none';
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      clearBtn.style.display = 'none';
+      input.focus();
+    });
+
+    // Enter key trigger
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') fetchVideos();
+    });
+
+    // Paste from clipboard helper
+    pasteChipBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          input.value = text.trim();
+          clearBtn.style.display = input.value.trim() ? 'inline-flex' : 'none';
+          input.focus();
+        }
+      } catch (err) {
+        showToast('Clipboard access unavailable — paste manually');
+      }
+    });
+
+    // Client-Side Persistent Cache Helpers
+    const CACHE_STORAGE_PREFIX = 'lpsg_cache_entry_';
+    const CACHE_INDEX_KEY = 'lpsg_cache_index';
+
+    function getNormalizedUrlKey(rawUrl) {
+      if (!rawUrl) return '';
+      return rawUrl.trim().toLowerCase().replace(/#.*$/, '');
+    }
+
+    function getCachedThread(rawUrl) {
+      try {
+        const key = getNormalizedUrlKey(rawUrl);
+        const stored = localStorage.getItem(CACHE_STORAGE_PREFIX + key);
+        if (!stored) return null;
+        return JSON.parse(stored);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveCachedThread(rawUrl, videos, postId) {
+      try {
+        if (!videos || videos.length === 0) return;
+        const key = getNormalizedUrlKey(rawUrl);
+        const entry = {
+          url: rawUrl.trim(),
+          normalizedUrl: key,
+          videos,
+          postId: postId || 'all',
+          timestamp: Date.now()
+        };
+        localStorage.setItem(CACHE_STORAGE_PREFIX + key, JSON.stringify(entry));
+
+        let indexList = [];
+        try {
+          indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
+        } catch (e) {
+          indexList = [];
+        }
+        indexList = indexList.filter(k => k.normalizedUrl !== key);
+        indexList.unshift({
+          normalizedUrl: key,
+          url: rawUrl.trim(),
+          count: videos.length,
+          timestamp: Date.now()
+        });
+        // Store up to 200 permanently cached threads
+        if (indexList.length > 200) {
+          const removed = indexList.splice(200);
+          removed.forEach(r => localStorage.removeItem(CACHE_STORAGE_PREFIX + r.normalizedUrl));
+        }
+        localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
+        updateCacheUI();
+      } catch (e) {
+        console.warn('Failed to save to localStorage cache:', e);
+      }
+    }
+
+    function updateCacheIndexRemove(key) {
+      try {
+        let indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
+        indexList = indexList.filter(k => k.normalizedUrl !== key);
+        localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
+        updateCacheUI();
+      } catch (e) {}
+    }
+
+    function clearAllCache() {
+      try {
+        let indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
+        indexList.forEach(k => localStorage.removeItem(CACHE_STORAGE_PREFIX + k.normalizedUrl));
+        localStorage.removeItem(CACHE_INDEX_KEY);
+        updateCacheUI();
+        showToast('Thread cache cleared');
+      } catch (e) {}
+    }
+
+    function updateCacheUI() {
+      const cacheGroup = document.getElementById('cache-indicator-group');
+      const cacheText = document.getElementById('cache-count-text');
+      if (!cacheGroup || !cacheText) return;
+
+      try {
+        const indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
+        if (indexList.length > 0) {
+          cacheGroup.style.display = 'inline-flex';
+          cacheText.textContent = `${indexList.length} cached thread${indexList.length > 1 ? 's' : ''}`;
+        } else {
+          cacheGroup.style.display = 'none';
+        }
+      } catch (e) {
+        cacheGroup.style.display = 'none';
+      }
+    }
+
+    function formatTimeAgo(timestamp) {
+      if (!timestamp) return 'just now';
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+      if (seconds < 60) return 'just now';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    }
+
+    async function fetchVideos(forceRefresh = false) {
+      const url = input.value.trim();
+      if (!url) {
+        showStatus('Please enter an LPSG thread URL to inspect.', 'error');
+        return;
+      }
+      if (!url.includes('lpsg.com')) {
+        showStatus('Please enter a valid URL containing lpsg.com', 'error');
+        return;
+      }
+
+      const cookies = localStorage.getItem('lpsg_cookies') || '';
+
+      // Check client-side persistent cache first if not explicitly refreshing
+      if (!forceRefresh) {
+        const cached = getCachedThread(url);
+        if (cached && cached.videos && cached.videos.length > 0) {
+          currentVideos = cached.videos;
+          const timeAgo = formatTimeAgo(cached.timestamp);
+          showStatus(`Loaded from cache (${timeAgo}) • ${cached.videos.length} direct stream${cached.videos.length > 1 ? 's' : ''}`, 'success');
+          displayVideos(cached.videos, true, cached.timestamp);
+          return;
+        }
+      }
+
+      fetchBtn.disabled = true;
+      fetchBtn.innerHTML = `
+        <span class="status-spinner"></span>
+        <span>${forceRefresh ? 'Refreshing...' : 'Extracting...'}</span>
+      `;
+      showStatus(
+        forceRefresh
+          ? 'Re-fetching latest stream data from LPSG...'
+          : (cookies
+              ? 'Connecting to LPSG with authenticated session cookies...'
+              : 'Connecting to LPSG thread and resolving CDN attachment streams...'),
+        'loading'
+      );
+
+      try {
+        const response = await fetch('/api/fetch-videos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, cookies, refresh: forceRefresh })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          showStatus(data.error, 'error');
+          return;
+        }
+
+        if (!data.videos || data.videos.length === 0) {
+          showStatus('No video attachments or media streams detected on this page/post.', 'error');
+          return;
+        }
+
+        currentVideos = data.videos;
+        saveCachedThread(url, data.videos, data.postId);
+
+        const isCachedHit = Boolean(data.cached);
+        const timeAgo = isCachedHit ? formatTimeAgo(data.cachedAt) : '';
+        const msg = isCachedHit
+          ? `Loaded from server cache (${timeAgo}) • ${data.videos.length} direct stream${data.videos.length > 1 ? 's' : ''}`
+          : `Successfully resolved ${data.videos.length} direct CDN video stream${data.videos.length > 1 ? 's' : ''}`;
+
+        showStatus(msg, 'success');
+        displayVideos(data.videos, isCachedHit, data.cachedAt);
+      } catch (error) {
+        showStatus(`Connection error: ${error.message}`, 'error');
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Fetch Videos</span>
+        `;
+      }
+    }
+
+    function showStatus(message, type) {
+      statusEl.className = `status-banner ${type}`;
+
+      let icon = '';
+      if (type === 'loading') {
+        icon = `<div class="status-spinner"></div>`;
+      } else if (type === 'error') {
+        icon = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        `;
+      } else if (type === 'success') {
+        icon = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        `;
+      }
+
+      statusEl.innerHTML = `${icon}<span>${escapeHtml(message)}</span>`;
+    }
+
+    function displayVideos(videos, isCached = false, cachedAt = null) {
+      const timeAgo = formatTimeAgo(cachedAt || Date.now());
+      const formattedDate = cachedAt ? new Date(cachedAt).toLocaleString() : '';
+
+      const countHeader = `
+        <div class="results-meta-header">
+          <div class="results-meta-left">
+            <div class="results-count-tag">
+              EXTRACTED STREAMS <span>${videos.length}</span>
+            </div>
+            ${isCached ? `
+              <div class="cached-status-badge" title="Loaded from cache (${escapeAttr(formattedDate)})">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span>Cached ${timeAgo}</span>
+              </div>
+            ` : ''}
+          </div>
+          <div class="results-meta-actions">
+            ${isCached ? `
+              <button class="btn-refetch" onclick="fetchVideos(true)" title="Fetch fresh data from LPSG">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+                <span>Re-fetch</span>
+              </button>
+            ` : ''}
+            ${videos.length > 1 ? `
+              <button class="btn-copy-all" onclick="copyAllUrls()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy All Stream URLs</span>
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      const videoCards = videos.map((video, i) => {
+        const ext = (video.extension || 'mp4').toLowerCase();
+        const filename = `${video.hash || 'stream-' + (i + 1)}.${ext}`;
+        const hasPoster = Boolean(video.posterUrl);
+
+        return `
+          <article class="video-media-card">
+            <div class="card-layout">
+              <!-- Video Poster / Preview -->
+              <div class="media-preview-box" onclick="openVideo('${escapeAttr(video.url)}')">
+                ${hasPoster ? `
+                  <img 
+                    src="${escapeAttr(video.posterUrl)}" 
+                    alt="Stream ${i + 1} poster preview" 
+                    class="media-poster-img"
+                    onerror="handlePosterError(this)"
+                  >
+                ` : `
+                  <div class="preview-fallback-placeholder">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span style="font-size:0.7rem;">Direct Stream</span>
+                  </div>
+                `}
+                <div class="play-action-overlay" title="Open and play stream">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Video Stream Information -->
+              <div class="media-details">
+                <div class="media-meta-row">
+                  <div class="media-title-group">
+                    <span class="media-index-label">Stream ${String(i + 1).padStart(2, '0')}</span>
+                    <span class="format-badge type-${escapeAttr(ext)}">${escapeHtml(ext)}</span>
+                  </div>
+                  ${video.hash ? `
+                    <span class="media-hash-pill" title="Hash: ${escapeAttr(video.hash)}">#${escapeHtml(video.hash)}</span>
+                  ` : ''}
+                </div>
+
+                <!-- Monospace Stream URL -->
+                <div class="stream-endpoint-box" onclick="copyUrl('${escapeAttr(video.url)}', this)" title="Click to copy direct URL">
+                  <span class="stream-endpoint-url">${escapeHtml(video.url)}</span>
+                  <div class="stream-endpoint-copy-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Actions Toolbar -->
+                <div class="media-actions-bar">
+                  <button class="btn-action-tool" onclick="copyUrl('${escapeAttr(video.url)}', this)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy Stream</span>
+                  </button>
+
+                  <button class="btn-action-tool" onclick="openVideo('${escapeAttr(video.url)}')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Open Direct</span>
+                  </button>
+
+                  <button class="btn-action-tool btn-primary-action-tool" onclick="downloadVideo('${escapeAttr(video.url)}', '${escapeAttr(filename)}')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      resultsEl.innerHTML = countHeader + videoCards;
+    }
+
+    function handlePosterError(imgEl) {
+      const container = imgEl.parentElement;
+      imgEl.remove();
+      if (!container.querySelector('.preview-fallback-placeholder')) {
+        const fallback = document.createElement('div');
+        fallback.className = 'preview-fallback-placeholder';
+        fallback.innerHTML = `
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span style="font-size:0.7rem;">Direct Stream</span>
+        `;
+        container.insertBefore(fallback, container.firstChild);
+      }
+    }
+
+    async function copyUrl(url, triggerEl) {
+      let succeeded = false;
+      try {
+        await navigator.clipboard.writeText(url);
+        succeeded = true;
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          succeeded = document.execCommand('copy');
+        } catch (err) { }
+        document.body.removeChild(ta);
+      }
+
+      if (triggerEl) {
+        const originalHtml = triggerEl.innerHTML;
+        triggerEl.classList.add('copied');
+        if (triggerEl.tagName.toLowerCase() === 'button') {
+          triggerEl.innerHTML = `
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Copied!</span>
+          `;
+          setTimeout(() => {
+            triggerEl.classList.remove('copied');
+            triggerEl.innerHTML = originalHtml;
+          }, 1800);
+        }
+      }
+
+      showToast('Stream URL copied to clipboard');
+    }
+
+    async function copyAllUrls() {
+      if (!currentVideos.length) return;
+      const allUrls = currentVideos.map(v => v.url).join('\n');
+      try {
+        await navigator.clipboard.writeText(allUrls);
+        showToast(`Copied ${currentVideos.length} stream URLs`);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = allUrls;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(`Copied ${currentVideos.length} stream URLs`);
+      }
+    }
+
+    function openVideo(url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function downloadVideo(url, filename) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename || 'video.mp4';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Download initiated');
+    }
+
+    let toastTimeout = null;
+    function showToast(message) {
+      let toast = document.getElementById('app-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'app-toast';
+        toast.className = 'modern-toast';
+        document.body.appendChild(toast);
+      }
+
+      toast.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>${escapeHtml(message)}</span>
+      `;
+
+      requestAnimationFrame(() => {
+        toast.classList.add('active');
+      });
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+      }, 2200);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '\\\'');
+    }
+  </script>
+</body>
+
+</html>

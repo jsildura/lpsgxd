@@ -1,0 +1,12 @@
+{
+  "name": "lpsg-video-fetcher",
+  "version": "1.0.0",
+  "description": "Fetch direct CDN video URLs from LPSG forum threads",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
