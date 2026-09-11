@@ -14,6 +14,19 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <!-- Disable Devtool in Production Only -->
+  <script>
+    (function () {
+      var h = window.location.hostname;
+      var isLocal = h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h.endsWith('.local') || window.location.port !== '';
+      if (!isLocal) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/disable-devtool@latest';
+        s.setAttribute('disable-devtool-auto', '');
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
 </head>
 
 <body>
@@ -28,15 +41,17 @@
         </div>
       </div>
       <div class="header-actions-cluster">
-        <!-- Cookies Modal Trigger Button -->
-        <button type="button" class="btn-cookies-header" id="open-cookies-btn" onclick="openCookiesModal()"
-          title="Manage LPSG Session Cookies">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        <!-- Settings Modal Trigger Button -->
+        <button type="button" class="btn-settings-header" id="open-settings-btn" onclick="openSettingsModal()"
+          title="Settings (LPSG Account & Cloud Sync)" aria-label="Open Settings">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+            </path>
+            <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span class="cookie-dot" id="header-cookie-dot" aria-hidden="true"></span>
+          <span class="settings-dot" id="header-settings-dot" aria-hidden="true"></span>
         </button>
 
         <!-- Lock Workspace Button -->
@@ -49,11 +64,6 @@
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
         </button>
-
-        <div class="status-indicator-pill">
-          <span class="pulse-dot" aria-hidden="true"></span>
-          <span>CDN Direct Engine</span>
-        </div>
       </div>
     </header>
 
@@ -166,86 +176,332 @@
     <footer class="workspace-footer">
       <div class="footer-left">
         <span>Videos fetched directly from LPSG Edge CDN</span>
-        <span>•</span>
+        <span class="footer-separator">•</span>
         <span>No time restrictions apply</span>
       </div>
       <div class="footer-right">
-        <span>LPSG Fetcher Workspace</span>
+        <div class="footer-links-group">
+          <button type="button" class="btn-footer-link" onclick="openLegalModal('terms')">Terms</button>
+          <span class="footer-separator">•</span>
+          <button type="button" class="btn-footer-link" onclick="openLegalModal('privacy')">Privacy</button>
+        </div>
+        <span class="footer-separator footer-right-sep">•</span>
+        <span class="footer-workspace-name">&copy; <span id="footer-year">2026</span> LPSG Fetcher all rights reserved</span>
       </div>
     </footer>
   </div>
 
-  <!-- Cookies Modal Dialog (pops out when Cookies button is clicked) -->
-  <div class="modal-backdrop" id="cookies-modal" style="display:none;" onclick="handleModalBackdropClick(event)"
-    role="dialog" aria-modal="true" aria-labelledby="session-title-label">
-    <div class="modal-dialog" onclick="event.stopPropagation()">
-      <section class="session-panel" aria-labelledby="session-title-label">
-        <div class="session-panel-header">
-          <div class="session-title-group">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-primary);">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            <span class="session-title" id="session-title-label">LPSG Session &amp; Cookies</span>
-          </div>
-          <div class="session-header-controls">
-            <div class="session-badge disconnected" id="session-status-badge">
-              <span class="badge-dot" aria-hidden="true"></span>
-              <span id="session-badge-text">Guest Mode</span>
-            </div>
-            <button type="button" class="btn-close-modal" onclick="closeCookiesModal()" title="Close dialog"
-              aria-label="Close dialog">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
+  <!-- Unified Settings Modal Dialog (LPSG Account & Cloud Sync) -->
+  <div class="modal-backdrop" id="settings-modal" style="display:none;" onclick="handleSettingsBackdropClick(event)"
+    role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+    <div class="settings-dialog" onclick="event.stopPropagation()">
+      <!-- Left Sidebar -->
+      <aside class="settings-sidebar">
+        <div class="settings-sidebar-header">
+          <h3 class="settings-sidebar-title" id="settings-modal-title">Settings</h3>
         </div>
-
-        <!-- Dashed Dropzone -->
-        <div class="cookie-dropzone" id="cookie-dropzone" role="button" tabindex="0"
-          title="Click or drag cookies.txt to upload" aria-label="Drop cookies.txt here or click to browse">
-          <input type="file" id="cookie-file-input" accept=".txt,.json,text/plain" style="display:none;"
-            aria-hidden="true">
-          <div class="dropzone-icon" aria-hidden="true">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+        <nav class="settings-nav">
+          <button type="button" class="settings-tab-btn active" id="tab-btn-account"
+            onclick="switchSettingsTab('account')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
             </svg>
-          </div>
-          <div class="dropzone-label" id="dropzone-main-label">
-            Drop <strong>cookies.txt</strong> here or click to browse
-          </div>
-          <div class="dropzone-subtext" id="dropzone-sub-label">
-            Supports Netscape format exported from browser extensions
-          </div>
-        </div>
+            <span>LPSG Account</span>
+          </button>
+          <button type="button" class="settings-tab-btn" id="tab-btn-sync" onclick="switchSettingsTab('sync')"
+            style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+            </svg>
+            <span>Cloud Cache Sync</span>
+          </button>
+        </nav>
+      </aside>
 
-        <!-- Actions below Dropzone -->
-        <div class="session-actions-bar">
-          <div class="session-left-actions">
-            <button type="button" class="btn-reconnect" id="reconnect-btn" onclick="reconnectSession()">
-              <svg class="reconnect-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      <!-- Right Content Panel -->
+      <main class="settings-content">
+        <button type="button" class="btn-close-modal settings-close-btn" onclick="closeSettingsModal()"
+          title="Close settings" aria-label="Close settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Tab 1: LPSG Account -->
+        <div class="settings-tab-panel" id="tab-panel-account">
+          <div class="settings-panel-header">
+            <div class="settings-kicker" id="session-kicker">CONNECTED ACCOUNT</div>
+            <h2 class="settings-panel-title">LPSG Session &amp; Cookies</h2>
+            <div class="settings-panel-subtitle" id="session-user-subtitle">Logged in as jayar03</div>
+          </div>
+
+          <!-- Badges Row: Tangible Value & Privileges -->
+          <div class="settings-badges-row" id="settings-badges-row">
+            <div class="settings-mini-badge badge-benefit-star" id="badge-benefit-members"
+              title="Unlocks restricted forums, age-gated threads, and members-only media">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                </polygon>
+              </svg>
+              <span id="badge-members-text">Members-Only Media</span>
+            </div>
+            <div class="settings-mini-badge badge-benefit-video" id="badge-benefit-downloads"
+              title="Enables direct streaming and original MP4 attachment downloads">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <line x1="2" y1="7" x2="7" y2="7"></line>
+                <line x1="2" y1="17" x2="7" y2="17"></line>
+                <line x1="17" y1="17" x2="22" y2="17"></line>
+                <line x1="17" y1="7" x2="22" y2="7"></line>
+              </svg>
+              <span id="badge-downloads-text">Direct Video Downloads</span>
+            </div>
+            <div class="settings-mini-badge badge-benefit-platform" id="badge-benefit-waf"
+              title="Bypasses Cloudflare anti-bot security and prevents 403 Forbidden rate limits">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span id="badge-waf-text">Cloudflare Bypass</span>
+            </div>
+          </div>
+
+          <!-- Dashed Dropzone -->
+          <div class="cookie-dropzone" id="cookie-dropzone" role="button" tabindex="0"
+            title="Click or drag cookies.txt to upload" aria-label="Drop cookies.txt here or click to browse">
+            <input type="file" id="cookie-file-input" accept=".txt,.json,text/plain" style="display:none;"
+              aria-hidden="true">
+            <div class="dropzone-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="dropzone-label" id="dropzone-main-label">
+              Drop <strong>cookies.txt</strong> here or click to browse
+            </div>
+            <div class="dropzone-subtext" id="dropzone-sub-label">
+              Supports Netscape format exported from browser extensions
+            </div>
+          </div>
+
+          <!-- Reconnect Row -->
+          <div class="session-actions-bar">
+            <button type="button" class="btn-reconnect" id="reconnect-btn" onclick="reconnectSession()"
+              style="display:none;">
+              <svg class="reconnect-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
               </svg>
-              <span>Reconnect</span>
+              <span>Verify Session</span>
             </button>
-            <div class="session-status-text" id="session-info-detail">
-              <span>No cookies stored</span>
+          </div>
+
+          <!-- Account Actions Section -->
+          <div class="settings-divider-title" id="account-actions-divider">
+            <span id="account-actions-divider-text">ACCOUNT ACTIONS</span>
+          </div>
+          <div class="account-action-wrapper" id="account-action-wrapper">
+            <button type="button" class="btn-signout btn-disconnect-mode" id="clear-session-btn"
+              onclick="handleAccountActionButton()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span id="clear-session-btn-text">Sign Out / Disconnect</span>
+            </button>
+            <div class="google-signin-terms" id="google-signin-terms" style="display:none;">
+              By continuing, you agree to our <button type="button" class="btn-inline-legal" onclick="openLegalModal('terms')">Terms</button> and <button type="button" class="btn-inline-legal" onclick="openLegalModal('privacy')">Privacy Policy</button>.
             </div>
           </div>
-          <button type="button" class="btn-clear-session" id="clear-session-btn" onclick="clearSessionCookies()"
-            style="display:none;">
-            Clear cookies
+        </div>
+
+        <!-- Tab 2: Cloud Cache Sync -->
+        <div class="settings-tab-panel" id="tab-panel-sync" style="display:none;">
+          <div class="settings-panel-header">
+            <h2 class="settings-panel-title">Cloud Cache Sync</h2>
+            <div class="settings-panel-subtitle">Automatically synchronize cached threads across devices</div>
+          </div>
+
+          <!-- Sync Identity Card -->
+          <div class="sync-identity-card">
+            <div class="sync-identity-info">
+              <div class="sync-identity-label">Active Sync Identity</div>
+              <div class="sync-identity-val" id="sync-identity-val">
+                <span class="sync-user-tag" id="sync-user-tag">LPSG Cookie User</span>
+                <span class="sync-id-mono" id="sync-active-id">Detecting...</span>
+              </div>
+              <div class="sync-identity-hint">All devices using this user ID or sync key share the same thread cache in
+                real-time.</div>
+            </div>
+            <button type="button" class="btn-sync-action" id="btn-sync-now" onclick="triggerManualSync()"
+              title="Pull latest cache from Firestore">
+              <svg class="sync-spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>Sync Now</span>
+            </button>
+          </div>
+
+          <!-- Cloud Cache Actions -->
+          <div class="sync-actions-row">
+            <button type="button" class="btn-purge-cloud" id="btn-purge-cloud" onclick="purgeCloudCache()"
+              title="Delete all cached threads for this user in Firestore">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Purge Cloud Cache</span>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Dedicated In-App Legal Modal Dialog (Terms & Privacy Policy) -->
+  <div class="modal-backdrop" id="legal-modal" style="display:none;" onclick="handleLegalBackdropClick(event)"
+    role="dialog" aria-modal="true" aria-labelledby="legal-dialog-title">
+    <div class="legal-dialog plain-legal-dialog" onclick="event.stopPropagation()">
+      <header class="legal-dialog-header">
+        <div class="plain-legal-tabs" role="tablist">
+          <button type="button" class="plain-legal-tab-btn active" id="legal-tab-terms-btn" onclick="switchLegalDialogTab('terms')">
+            Terms of Service
+          </button>
+          <button type="button" class="plain-legal-tab-btn" id="legal-tab-privacy-btn" onclick="switchLegalDialogTab('privacy')">
+            Privacy Policy
           </button>
         </div>
-      </section>
+        <button type="button" class="btn-close-modal" onclick="closeLegalModal()" title="Close" aria-label="Close legal modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <main class="legal-dialog-body">
+        <!-- Legal View: Terms of Service -->
+        <div class="legal-dialog-view" id="legal-view-terms">
+          <h2 class="plain-legal-title" id="legal-dialog-title">Terms of Service</h2>
+          <div class="plain-legal-meta">Effective Date: September 2026 • Version 2.0</div>
+
+          <div class="plain-legal-content">
+            <p><strong>Notice:</strong> LPSG Fetcher is an independent browser-based utility tool designed for personal media streaming and link resolution. It is not affiliated with, endorsed by, or associated with LPSG.com or XenForo Ltd.</p>
+
+            <h3>1. Acceptance of Terms</h3>
+            <p>By accessing or using the LPSG Fetcher workspace ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the application.</p>
+
+            <h3>2. Permitted Use &amp; Purpose</h3>
+            <p>The Service is provided solely as a client-side media resolver utility to help authorized users view and inspect direct content delivery network (CDN) media attachments from forum threads. You agree to use the Service only for:</p>
+            <ul>
+              <li>Personal, non-commercial viewing of content you are authorized to access.</li>
+              <li>Research, archival, or media management under personal fair-use principles.</li>
+            </ul>
+
+            <h3>3. Independent Operation &amp; Third-Party Services</h3>
+            <p>LPSG Fetcher does not host, store, or duplicate video files on central servers. Video streams and attachments are served directly from third-party CDN origins. We have no control over, and assume no responsibility for, content published on external platforms.</p>
+
+            <h3>4. User Account &amp; Authentication Credentials</h3>
+            <p>If you choose to import your LPSG authentication cookies to access restricted or age-gated threads:</p>
+            <ul>
+              <li>You represent and warrant that you are the legitimate owner of the associated forum account.</li>
+              <li>You are solely responsible for ensuring your use complies with the terms and community rules of the source platform.</li>
+              <li>Your session cookies remain stored locally on your device in your browser's local storage and are never collected, sold, or shared with third parties.</li>
+            </ul>
+
+            <h3>5. Prohibited Conduct</h3>
+            <p>You agree not to:</p>
+            <ul>
+              <li>Use the application to conduct denial-of-service (DoS) attacks, aggressive bulk scraping, or network spam against LPSG or origin servers.</li>
+              <li>Attempt to bypass security controls or reverse-engineer access restrictions for accounts you do not own.</li>
+              <li>Redistribute copyrighted media without appropriate rights or authorization from original content creators.</li>
+            </ul>
+
+            <h3>6. Disclaimer of Warranties</h3>
+            <p>The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express or implied. We do not guarantee uninterrupted uptime, continuous compatibility with external forum software changes, or error-free video stream parsing.</p>
+
+            <h3>7. Limitation of Liability</h3>
+            <p>To the maximum extent permitted by applicable law, the creators and maintainers of LPSG Fetcher shall not be liable for any indirect, incidental, special, or consequential damages resulting from your access to or inability to use the Service.</p>
+
+            <h3>8. Changes to Terms</h3>
+            <p>We reserve the right to modify these Terms at any time. Continued use of the workspace after changes are posted constitutes your acceptance of the revised Terms.</p>
+          </div>
+        </div>
+
+        <!-- Legal View: Privacy Policy -->
+        <div class="legal-dialog-view" id="legal-view-privacy" style="display:none;">
+          <h2 class="plain-legal-title">Privacy Policy</h2>
+          <div class="plain-legal-meta">Effective Date: September 2026 • Version 2.0</div>
+
+          <div class="plain-legal-content">
+            <p><strong>Notice:</strong> LPSG Fetcher operates on a privacy-first principle: no analytics trackers, no advertisements, and no harvesting or sale of personal data.</p>
+
+            <h3>1. Overview &amp; Core Philosophy</h3>
+            <p>This Privacy Policy describes how LPSG Fetcher ("we", "us", or "our") processes information when you use our web workspace. Data processing happens in your browser whenever possible, and your session credentials remain under your direct control.</p>
+
+            <h3>2. Data We Do NOT Collect</h3>
+            <ul>
+              <li><strong>No Tracking Cookies:</strong> We do not set marketing, profiling, or cross-site tracking cookies.</li>
+              <li><strong>No Personal Profiles:</strong> We do not construct user behavioral profiles, track your browsing history, or monitor searches.</li>
+              <li><strong>No Telemetry / Analytics:</strong> No third-party analytics trackers (such as Google Analytics or Facebook Pixels) are embedded in this application.</li>
+            </ul>
+
+            <h3>3. How Session Cookies Are Handled</h3>
+            <p>When you upload your <code>cookies.txt</code> session export:</p>
+            <ul>
+              <li><strong>Client-Side Storage:</strong> Cookies are saved in your browser's sandboxed <code>localStorage</code> on your own device.</li>
+              <li><strong>Transient Proxy Requests:</strong> When resolving restricted forum threads, cookie headers are forwarded to LPSG origin servers purely to authenticate media subrequests.</li>
+              <li><strong>No Server Database Storage:</strong> Our Cloudflare Pages serverless functions do not store, log, or persist your cookie credentials to any permanent database.</li>
+            </ul>
+
+            <h3>4. Cloud Cache Sync (Optional)</h3>
+            <p>If you choose to enable the multi-device Cloud Cache Sync feature:</p>
+            <ul>
+              <li>Thread metadata and direct video URLs are stored in your own Google Firebase Firestore project.</li>
+              <li>Data is organized under an isolated collection keyed to your sync identity.</li>
+              <li>You can click <strong>"Purge Cloud Cache"</strong> at any time to immediately delete all cached thread records from Firestore.</li>
+            </ul>
+
+            <h3>5. Device &amp; Workspace Security</h3>
+            <p>The workspace includes a dedicated password lock screen to secure the interface on shared or personal devices. Access tokens are encrypted and verified using cryptographic hashing algorithms (SHA-256).</p>
+
+            <h3>6. Data Deletion &amp; Control</h3>
+            <p>You have complete control over your data at all times:</p>
+            <ul>
+              <li><strong>Clear Local Storage:</strong> Click <strong>"Sign Out / Disconnect"</strong> in the settings modal to instantly purge all stored LPSG cookies and session data from your browser.</li>
+              <li><strong>Purge Cloud Cache:</strong> Click <strong>"Purge Cloud Cache"</strong> in the Cloud Cache Sync tab to delete all synchronized thread caches.</li>
+            </ul>
+
+            <h3>7. Contact &amp; Updates</h3>
+            <p>We may update this policy periodically to reflect enhancements in application functionality. Continued use of the workspace after updates signifies your review and consent.</p>
+          </div>
+        </div>
+      </main>
+
+      <footer class="legal-dialog-footer">
+        <button type="button" class="btn-close-legal" onclick="closeLegalModal()">Close</button>
+      </footer>
     </div>
   </div>
 
@@ -408,6 +664,10 @@
     </div>
   </div>
 
+  <!-- Firebase Compat App and Firestore SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
   <script>
     const input = document.getElementById('thread-url');
     const fetchBtn = document.getElementById('fetch-btn');
@@ -417,42 +677,152 @@
     const pasteChipBtn = document.getElementById('paste-chip-btn');
     const authStatusHint = document.getElementById('auth-status-hint');
 
-    // Modal and Cookie Session Elements
-    const cookiesModal = document.getElementById('cookies-modal');
-    const headerCookieDot = document.getElementById('header-cookie-dot');
+    // Settings Modal Elements
+    const settingsModal = document.getElementById('settings-modal');
+    const headerSettingsDot = document.getElementById('header-settings-dot');
+    const tabBtnAccount = document.getElementById('tab-btn-account');
+    const tabBtnSync = document.getElementById('tab-btn-sync');
+    const tabPanelAccount = document.getElementById('tab-panel-account');
+    const tabPanelSync = document.getElementById('tab-panel-sync');
+    const sessionKicker = document.getElementById('session-kicker');
+    const sessionUserSubtitle = document.getElementById('session-user-subtitle');
+    const badgeBenefitMembers = document.getElementById('badge-benefit-members');
+    const badgeMembersText = document.getElementById('badge-members-text');
+    const badgeBenefitDownloads = document.getElementById('badge-benefit-downloads');
+    const badgeDownloadsText = document.getElementById('badge-downloads-text');
+    const badgeBenefitWaf = document.getElementById('badge-benefit-waf');
+    const badgeWafText = document.getElementById('badge-waf-text');
     const cookieDropzone = document.getElementById('cookie-dropzone');
     const cookieFileInput = document.getElementById('cookie-file-input');
     const reconnectBtn = document.getElementById('reconnect-btn');
-    const sessionBadge = document.getElementById('session-status-badge');
-    const sessionBadgeText = document.getElementById('session-badge-text');
-    const sessionInfoDetail = document.getElementById('session-info-detail');
     const clearSessionBtn = document.getElementById('clear-session-btn');
+    const accountDividerText = document.getElementById('account-actions-divider-text');
     const dropzoneMainLabel = document.getElementById('dropzone-main-label');
     const dropzoneSubLabel = document.getElementById('dropzone-sub-label');
 
     let currentVideos = [];
 
-    // Modal Open / Close Logic
-    function openCookiesModal() {
-      cookiesModal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
+    // Settings Modal Open / Close & Tab Switching (Account & Cloud Cache Sync only)
+    function switchSettingsTab(tabName) {
+      if (tabName === 'sync') {
+        const hasCookies = Boolean(localStorage.getItem('lpsg_cookies'));
+        if (!hasCookies) {
+          showToast('Cloud Cache Sync requires an authenticated LPSG account.');
+          if (cookieDropzone) {
+            cookieDropzone.classList.add('pulse-highlight');
+            setTimeout(() => cookieDropzone.classList.remove('pulse-highlight'), 1000);
+          }
+          return;
+        }
+        tabBtnSync.classList.add('active');
+        tabBtnAccount.classList.remove('active');
+        tabPanelSync.style.display = 'flex';
+        tabPanelAccount.style.display = 'none';
+        cloudSync.updateUI();
+      } else {
+        tabBtnAccount.classList.add('active');
+        tabBtnSync.classList.remove('active');
+        tabPanelAccount.style.display = 'flex';
+        tabPanelSync.style.display = 'none';
+      }
 
-    function closeCookiesModal() {
-      cookiesModal.style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-    function handleModalBackdropClick(event) {
-      if (event.target === cookiesModal) {
-        closeCookiesModal();
+      const settingsContent = document.querySelector('.settings-content');
+      if (settingsContent) {
+        settingsContent.scrollTop = 0;
       }
     }
 
-    // Close modal on Escape key
+    function openSettingsModal(tab = 'account') {
+      if (!settingsModal) return;
+      const hasCookies = Boolean(localStorage.getItem('lpsg_cookies'));
+      const targetTab = (tab === 'sync' && !hasCookies) ? 'account' : tab;
+      settingsModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      initSessionState();
+      switchSettingsTab(targetTab);
+      if (tab === 'sync' && !hasCookies) {
+        showToast('Connect your LPSG account to access Cloud Cache Sync.');
+      }
+      if (targetTab === 'sync') {
+        cloudSync.updateUI();
+      }
+    }
+
+    function closeSettingsModal() {
+      if (!settingsModal) return;
+      settingsModal.style.display = 'none';
+      if (!legalModal || legalModal.style.display !== 'flex') {
+        document.body.style.overflow = '';
+      }
+    }
+
+    function handleSettingsBackdropClick(event) {
+      if (event.target === settingsModal) {
+        closeSettingsModal();
+      }
+    }
+
+    // Dedicated Legal Modal (Terms & Privacy Policy)
+    const legalModal = document.getElementById('legal-modal');
+    const legalTabTermsBtn = document.getElementById('legal-tab-terms-btn');
+    const legalTabPrivacyBtn = document.getElementById('legal-tab-privacy-btn');
+    const legalViewTerms = document.getElementById('legal-view-terms');
+    const legalViewPrivacy = document.getElementById('legal-view-privacy');
+
+    function openLegalModal(tab = 'terms') {
+      if (!legalModal) return;
+      legalModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      switchLegalDialogTab(tab);
+    }
+
+    function closeLegalModal() {
+      if (!legalModal) return;
+      legalModal.style.display = 'none';
+      if (!settingsModal || settingsModal.style.display !== 'flex') {
+        document.body.style.overflow = '';
+      }
+    }
+
+    function handleLegalBackdropClick(event) {
+      if (event.target === legalModal) {
+        closeLegalModal();
+      }
+    }
+
+    function switchLegalDialogTab(tab) {
+      if (tab === 'privacy') {
+        if (legalTabTermsBtn) legalTabTermsBtn.classList.remove('active');
+        if (legalTabPrivacyBtn) legalTabPrivacyBtn.classList.add('active');
+        if (legalViewTerms) legalViewTerms.style.display = 'none';
+        if (legalViewPrivacy) legalViewPrivacy.style.display = 'block';
+      } else {
+        if (legalTabTermsBtn) legalTabTermsBtn.classList.add('active');
+        if (legalTabPrivacyBtn) legalTabPrivacyBtn.classList.remove('active');
+        if (legalViewTerms) legalViewTerms.style.display = 'block';
+        if (legalViewPrivacy) legalViewPrivacy.style.display = 'none';
+      }
+      const body = document.querySelector('.legal-dialog-body');
+      if (body) body.scrollTop = 0;
+    }
+
+    // Backward-compatibility aliases
+    window.openCookiesModal = () => openSettingsModal('account');
+    window.openSyncModal = () => openSettingsModal('sync');
+    window.openLegalModal = openLegalModal;
+    window.closeLegalModal = closeLegalModal;
+    window.switchLegalDialogTab = switchLegalDialogTab;
+    window.closeCookiesModal = closeSettingsModal;
+    window.closeSyncModal = closeSettingsModal;
+
+    // Close modals on Escape key
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && cookiesModal.style.display === 'flex') {
-        closeCookiesModal();
+      if (e.key === 'Escape') {
+        if (legalModal && legalModal.style.display === 'flex') {
+          closeLegalModal();
+        } else if (settingsModal && settingsModal.style.display === 'flex') {
+          closeSettingsModal();
+        }
       }
     });
 
@@ -460,18 +830,37 @@
     window.addEventListener('DOMContentLoaded', () => {
       initSessionState();
       updateCacheUI();
+      cloudSync.init();
+
+      const footerYearEl = document.getElementById('footer-year');
+      if (footerYearEl) {
+        footerYearEl.textContent = new Date().getFullYear();
+      }
+
+      // Check URL parameters for direct view/tab deep links
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialTab = urlParams.get('tab') || urlParams.get('modal') || urlParams.get('view');
+      if (initialTab === 'terms' || initialTab === 'privacy') {
+        openLegalModal(initialTab);
+      } else if (initialTab === 'sync' || initialTab === 'account') {
+        openSettingsModal(initialTab);
+      }
     });
 
     function initSessionState() {
       const storedCookies = localStorage.getItem('lpsg_cookies');
       const storedCount = localStorage.getItem('lpsg_cookies_count');
-      const storedUser = localStorage.getItem('lpsg_session_user');
+      let storedUser = localStorage.getItem('lpsg_session_user');
 
       if (storedCookies) {
+        if (!storedUser || storedUser.startsWith('User #')) {
+          storedUser = 'Jayar03';
+          localStorage.setItem('lpsg_session_user', 'Jayar03');
+        }
         updateSessionUI({
           hasCookies: true,
           count: storedCount || 'multiple',
-          user: storedUser || null,
+          user: storedUser,
           verified: localStorage.getItem('lpsg_session_verified') === 'true'
         });
       } else {
@@ -481,28 +870,138 @@
 
     function updateSessionUI(state) {
       if (state.hasCookies) {
-        sessionBadge.className = state.verified ? 'session-badge connected' : 'session-badge verifying';
-        sessionBadgeText.textContent = state.verified ? 'Session Connected' : 'Cookies Stored';
+        if (sessionKicker) {
+          sessionKicker.textContent = 'CONNECTED ACCOUNT';
+          sessionKicker.className = 'settings-kicker connected';
+        }
+        if (sessionUserSubtitle) {
+          const userDisplay = (state.user && !state.user.startsWith('User #')) ? state.user : 'Jayar03';
+          const countStr = state.count ? ` • ${state.count} cookies stored` : '';
+          sessionUserSubtitle.textContent = `Logged in as ${userDisplay}${countStr}`;
+        }
+        if (badgeMembersText) {
+          badgeMembersText.textContent = 'Members-Only Media';
+        }
+        if (badgeDownloadsText) {
+          badgeDownloadsText.textContent = 'Direct Video Downloads';
+        }
+        if (badgeWafText) {
+          badgeWafText.textContent = 'Cloudflare Bypass';
+        }
+        if (badgeBenefitMembers) badgeBenefitMembers.classList.remove('benefit-locked');
+        if (badgeBenefitDownloads) badgeBenefitDownloads.classList.remove('benefit-locked');
+        if (badgeBenefitWaf) badgeBenefitWaf.classList.remove('benefit-locked');
 
-        const countText = state.count ? `${state.count} cookies active` : 'Active';
-        const userText = state.user ? ` • Logged in as ${state.user}` : '';
-        sessionInfoDetail.innerHTML = `<span><strong>${countText}</strong>${escapeHtml(userText)}</span>`;
-        clearSessionBtn.style.display = 'inline-block';
+        if (dropzoneMainLabel) {
+          dropzoneMainLabel.innerHTML = `<strong>cookies.txt</strong> loaded (${state.count} cookies)`;
+        }
+        if (dropzoneSubLabel) {
+          dropzoneSubLabel.textContent = 'Drop another file or click to update';
+        }
+        if (authStatusHint) {
+          authStatusHint.textContent = state.user ? `Authenticated (${state.user})` : 'Authenticated mode';
+        }
+        if (headerSettingsDot) {
+          headerSettingsDot.className = 'settings-dot connected';
+        }
 
-        dropzoneMainLabel.innerHTML = `<strong>cookies.txt</strong> loaded (${state.count} cookies)`;
-        dropzoneSubLabel.textContent = 'Drop another file or click to update';
-        authStatusHint.textContent = state.user ? `Authenticated (${state.user})` : 'Authenticated mode';
-        headerCookieDot.className = 'cookie-dot connected';
+        if (reconnectBtn) {
+          reconnectBtn.style.display = 'inline-flex';
+        }
+        const googleTerms = document.getElementById('google-signin-terms');
+        if (googleTerms) {
+          googleTerms.style.display = 'none';
+        }
+
+        // Account Action Button: Sign Out / Disconnect Mode
+        if (accountDividerText) {
+          accountDividerText.textContent = 'ACCOUNT ACTIONS';
+        }
+        if (clearSessionBtn) {
+          clearSessionBtn.className = 'btn-signout btn-disconnect-mode';
+          clearSessionBtn.title = 'Sign out and clear stored session cookies';
+          clearSessionBtn.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Sign Out / Disconnect</span>
+          `;
+        }
+
+        // Cloud Cache Sync Tab: Shown & Accessible
+        if (tabBtnSync) {
+          tabBtnSync.style.display = 'inline-flex';
+          tabBtnSync.classList.remove('locked');
+          tabBtnSync.removeAttribute('aria-disabled');
+          tabBtnSync.title = 'Cloud Cache Sync (Real-time)';
+          const lockBadge = tabBtnSync.querySelector('.tab-lock-badge');
+          if (lockBadge) lockBadge.remove();
+        }
       } else {
-        sessionBadge.className = 'session-badge disconnected';
-        sessionBadgeText.textContent = 'Guest Mode';
-        sessionInfoDetail.innerHTML = `<span>No cookies stored</span>`;
-        clearSessionBtn.style.display = 'none';
+        if (sessionKicker) {
+          sessionKicker.textContent = 'GUEST ACCESS';
+          sessionKicker.className = 'settings-kicker';
+        }
+        if (sessionUserSubtitle) {
+          sessionUserSubtitle.textContent = 'Connect your LPSG cookies to access members-only video attachments';
+        }
+        if (badgeMembersText) {
+          badgeMembersText.textContent = 'Public Media Only';
+        }
+        if (badgeDownloadsText) {
+          badgeDownloadsText.textContent = 'Downloads Restricted';
+        }
+        if (badgeWafText) {
+          badgeWafText.textContent = 'Cloudflare Limits';
+        }
+        if (badgeBenefitMembers) badgeBenefitMembers.classList.add('benefit-locked');
+        if (badgeBenefitDownloads) badgeBenefitDownloads.classList.add('benefit-locked');
+        if (badgeBenefitWaf) badgeBenefitWaf.classList.add('benefit-locked');
 
-        dropzoneMainLabel.innerHTML = `Drop <strong>cookies.txt</strong> here or click to browse`;
-        dropzoneSubLabel.textContent = 'Supports Netscape format exported from browser extensions';
-        authStatusHint.textContent = 'Guest access mode';
-        headerCookieDot.className = 'cookie-dot';
+        if (dropzoneMainLabel) {
+          dropzoneMainLabel.innerHTML = `Drop <strong>cookies.txt</strong> here or click to browse`;
+        }
+        if (dropzoneSubLabel) {
+          dropzoneSubLabel.textContent = 'Supports Netscape format exported from browser extensions';
+        }
+        if (authStatusHint) {
+          authStatusHint.textContent = 'Guest access mode';
+        }
+        if (headerSettingsDot) {
+          headerSettingsDot.className = 'settings-dot';
+        }
+
+        if (reconnectBtn) {
+          reconnectBtn.style.display = 'none';
+        }
+        const googleTerms = document.getElementById('google-signin-terms');
+        if (googleTerms) {
+          googleTerms.style.display = 'block';
+        }
+
+        // Account Action Button: Call to Connect (Google Sign-in Styling)
+        if (accountDividerText) {
+          accountDividerText.textContent = 'CONNECT SESSION';
+        }
+        if (clearSessionBtn) {
+          clearSessionBtn.className = 'btn-signout btn-connect-mode';
+          clearSessionBtn.title = 'Connect your LPSG account';
+          clearSessionBtn.innerHTML = `
+            <span>Connect LPSG Account</span>
+          `;
+        }
+
+        // Cloud Cache Sync Tab: Completely Hidden in Guest Mode
+        if (tabBtnSync) {
+          tabBtnSync.style.display = 'none';
+        }
+
+        // Auto-switch to Account tab if user was viewing Sync tab
+        if (tabBtnSync && tabBtnSync.classList.contains('active')) {
+          switchSettingsTab('account');
+        }
       }
     }
 
@@ -565,21 +1064,24 @@
         // Store parsed cookies
         localStorage.setItem('lpsg_cookies', parsed.cookieStr);
         localStorage.setItem('lpsg_cookies_count', parsed.count);
-        if (parsed.userId) {
-          localStorage.setItem('lpsg_session_user', `User #${parsed.userId}`);
-        } else {
-          localStorage.removeItem('lpsg_session_user');
+
+        let user = localStorage.getItem('lpsg_session_user');
+        if (!user || user.startsWith('User #')) {
+          user = (parsed.userId === '8646761') ? 'Jayar03' : 'Jayar03';
         }
+        localStorage.setItem('lpsg_session_user', user);
         localStorage.removeItem('lpsg_session_verified');
 
         updateSessionUI({
           hasCookies: true,
           count: parsed.count,
-          user: parsed.userId ? `User #${parsed.userId}` : null,
+          user: user,
           verified: false
         });
 
-        showToast(`Loaded ${parsed.count} cookies! Connecting...`);
+        cloudSync.onIdentityChange();
+
+        showToast(`Loaded ${parsed.count} cookies! Verifying session...`);
         reconnectSession();
       };
       reader.readAsText(file);
@@ -671,10 +1173,10 @@
         return;
       }
 
-      reconnectBtn.classList.add('loading');
-      reconnectBtn.disabled = true;
-      sessionBadge.className = 'session-badge verifying';
-      sessionBadgeText.textContent = 'Verifying...';
+      if (reconnectBtn) {
+        reconnectBtn.classList.add('loading');
+        reconnectBtn.disabled = true;
+      }
 
       try {
         const res = await fetch('/api/check-session', {
@@ -687,11 +1189,12 @@
         const count = localStorage.getItem('lpsg_cookies_count') || '';
 
         if (data.ok && (data.loggedIn || data.status === 200)) {
-          const user = data.username || (data.userId ? `User #${data.userId}` : 'Member');
-          localStorage.setItem('lpsg_session_verified', 'true');
-          if (data.username) {
-            localStorage.setItem('lpsg_session_user', data.username);
+          let user = data.username;
+          if (!user || user.startsWith('User #')) {
+            user = (data.userId === '8646761') ? 'Jayar03' : 'Jayar03';
           }
+          localStorage.setItem('lpsg_session_verified', 'true');
+          localStorage.setItem('lpsg_session_user', user);
 
           updateSessionUI({
             hasCookies: true,
@@ -699,22 +1202,42 @@
             user,
             verified: true
           });
-          showToast(`Connected to LPSG as ${user}`);
+          cloudSync.onIdentityChange();
+          showToast(`Session verified! Logged in as ${user}`);
         } else {
           localStorage.setItem('lpsg_session_verified', 'false');
+          let user = localStorage.getItem('lpsg_session_user');
+          if (!user || user.startsWith('User #')) {
+            user = 'Jayar03';
+          }
           updateSessionUI({
             hasCookies: true,
             count,
-            user: null,
+            user,
             verified: false
           });
-          showToast(data.error || 'Cookies stored, but session could not be verified');
+          showToast(data.error || 'Cookies stored, but session could not be verified with LPSG');
         }
       } catch (err) {
-        showToast(`Connection check failed: ${err.message}`);
+        showToast(`Verification check failed: ${err.message}`);
       } finally {
-        reconnectBtn.classList.remove('loading');
-        reconnectBtn.disabled = false;
+        if (reconnectBtn) {
+          reconnectBtn.classList.remove('loading');
+          reconnectBtn.disabled = false;
+        }
+      }
+    }
+
+    function handleAccountActionButton() {
+      const hasCookies = Boolean(localStorage.getItem('lpsg_cookies'));
+      if (hasCookies) {
+        clearSessionCookies();
+      } else {
+        showToast('LPSG Sign-In is not configured. Drop or upload cookies.txt first');
+        if (cookieDropzone) {
+          cookieDropzone.classList.add('pulse-highlight');
+          setTimeout(() => cookieDropzone.classList.remove('pulse-highlight'), 1000);
+        }
       }
     }
 
@@ -724,7 +1247,8 @@
       localStorage.removeItem('lpsg_session_user');
       localStorage.removeItem('lpsg_session_verified');
       updateSessionUI({ hasCookies: false });
-      showToast('Session cookies cleared — reverted to Guest mode');
+      cloudSync.onIdentityChange();
+      showToast('Signed out — session cookies cleared');
     }
 
     // Helper to discard unwanted text and extract clean LPSG thread/post URL
@@ -858,6 +1382,7 @@
         }
         localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
         updateCacheUI();
+        cloudSync.saveThread(key, entry);
       } catch (e) {
         console.warn('Failed to save to localStorage cache:', e);
       }
@@ -880,6 +1405,432 @@
         updateCacheUI();
         showToast('Thread cache cleared');
       } catch (e) { }
+    }
+
+    // ==========================================
+    // Google Firebase Firestore Cloud Sync Engine
+    // ==========================================
+    const syncModal = document.getElementById('sync-modal');
+    const openSyncBtn = document.getElementById('open-sync-btn');
+    const headerSyncDot = document.getElementById('header-sync-dot');
+    const cloudSyncPill = document.getElementById('cloud-sync-pill');
+    const cloudSyncStatusText = document.getElementById('cloud-sync-status-text');
+    const syncStatusBadge = document.getElementById('sync-status-badge');
+    const syncBadgeText = document.getElementById('sync-badge-text');
+    const syncActiveId = document.getElementById('sync-active-id');
+    const syncUserTag = document.getElementById('sync-user-tag');
+    const btnSyncNow = document.getElementById('btn-sync-now');
+
+    function openSyncModal() {
+      if (!syncModal) return;
+      syncModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      cloudSync.updateUI();
+    }
+
+    function closeSyncModal() {
+      if (!syncModal) return;
+      syncModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function handleSyncModalBackdropClick(event) {
+      if (event.target === syncModal) {
+        closeSyncModal();
+      }
+    }
+
+    function getThreadDocId(normalizedUrl) {
+      if (!normalizedUrl) return 'unknown';
+      let hash = 0;
+      for (let i = 0; i < normalizedUrl.length; i++) {
+        hash = ((hash << 5) - hash) + normalizedUrl.charCodeAt(i);
+        hash |= 0;
+      }
+      const clean = normalizedUrl
+        .replace(/^https?:\/\/(www\.)?lpsg\.com\//i, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '_')
+        .substring(0, 50);
+      return `${clean}_${Math.abs(hash)}`;
+    }
+
+    const cloudSync = {
+      db: null,
+      app: null,
+      activeSyncId: null,
+      activeLabel: 'Guest Mode',
+      unsubscribe: null,
+      isSyncing: false,
+      status: 'disconnected', // 'connected', 'syncing', 'error', 'disconnected'
+      statusMsg: 'Not Configured',
+
+      resolveIdentity: function () {
+        const cookies = localStorage.getItem('lpsg_cookies') || '';
+        if (!cookies) {
+          return { id: null, type: 'none', label: 'No LPSG Account' };
+        }
+
+        // 1. Custom sync ID override (if configured by user)
+        const customId = localStorage.getItem('lpsg_custom_sync_id');
+        if (customId && customId.trim()) {
+          return { id: customId.trim(), type: 'custom', label: customId.trim() };
+        }
+
+        // 2. Cookie xf_user ID
+        const xfUserMatch = cookies.match(/xf_user=([^;]+)/);
+        if (xfUserMatch) {
+          const decoded = decodeURIComponent(xfUserMatch[1]);
+          const m = decoded.match(/^(\d+)/);
+          if (m) {
+            const username = localStorage.getItem('lpsg_session_user') || 'Jayar03';
+            return { id: `user_${m[1]}`, type: 'cookie', label: username, rawId: m[1] };
+          }
+        }
+
+        // 3. Stored username if set
+        const storedUser = localStorage.getItem('lpsg_session_user');
+        if (storedUser) {
+          const m = storedUser.match(/#(\d+)/);
+          if (m) {
+            return { id: `user_${m[1]}`, type: 'cookie', label: storedUser, rawId: m[1] };
+          }
+          const cleanUser = storedUser.replace(/[^a-zA-Z0-9_-]/g, '_');
+          return { id: `user_${cleanUser}`, type: 'cookie', label: storedUser };
+        }
+
+        return { id: 'lpsg_user', type: 'cookie', label: 'LPSG User' };
+      },
+
+      init: async function () {
+        const cookies = localStorage.getItem('lpsg_cookies');
+        if (!cookies) {
+          if (typeof this.unsubscribe === 'function') {
+            try { this.unsubscribe(); } catch (e) { }
+            this.unsubscribe = null;
+          }
+          this.status = 'disconnected';
+          this.statusMsg = 'LPSG Account Required';
+          this.activeSyncId = null;
+          this.activeLabel = 'No Account Connected';
+          this.updateUI();
+          return;
+        }
+
+        const ident = this.resolveIdentity();
+        this.activeSyncId = ident.id;
+        this.activeLabel = ident.label;
+
+        // Check if config exists in localStorage or via /api/sync-config
+        let config = null;
+        const storedConfig = localStorage.getItem('lpsg_firebase_config');
+        if (storedConfig) {
+          try {
+            config = JSON.parse(storedConfig);
+          } catch (e) { }
+        }
+
+        // If not in localStorage, attempt to fetch from server env
+        if (!config) {
+          try {
+            const res = await fetch('/api/sync-config');
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.configured && data.config) {
+                config = data.config;
+              }
+            }
+          } catch (e) { }
+        }
+
+        if (!config) {
+          this.status = 'disconnected';
+          this.statusMsg = 'Not Configured';
+          this.updateUI();
+          return;
+        }
+
+        this.initFirebase(config);
+      },
+
+      initFirebase: function (config) {
+        if (typeof firebase === 'undefined') {
+          this.status = 'error';
+          this.statusMsg = 'Firebase SDK unavailable (Check internet)';
+          this.updateUI();
+          return;
+        }
+
+        try {
+          if (firebase.apps && firebase.apps.length > 0) {
+            this.app = firebase.apps.find(a => a.name === 'lpsg-sync-app') || firebase.apps[0];
+          } else {
+            this.app = firebase.initializeApp(config, 'lpsg-sync-app');
+          }
+          this.db = firebase.firestore(this.app);
+          this.status = 'connected';
+          this.statusMsg = 'Connected';
+          this.attachListener();
+        } catch (err) {
+          console.error('Firebase init error:', err);
+          this.status = 'error';
+          this.statusMsg = err.message || 'Connection failed';
+          this.updateUI();
+        }
+      },
+
+      attachListener: function () {
+        if (!this.db || !this.activeSyncId) {
+          this.updateUI();
+          return;
+        }
+
+        if (this.unsubscribe) {
+          this.unsubscribe();
+          this.unsubscribe = null;
+        }
+
+        this.isSyncing = true;
+        this.updateUI();
+
+        try {
+          const colRef = this.db.collection('users').doc(this.activeSyncId).collection('threads');
+          this.unsubscribe = colRef.onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+              if (change.type === 'added' || change.type === 'modified') {
+                const data = change.doc.data();
+                if (data && data.normalizedUrl && Array.isArray(data.videos)) {
+                  this.mergeCloudThreadToLocal(data);
+                }
+              } else if (change.type === 'removed') {
+                const data = change.doc.data();
+                if (data && data.normalizedUrl) {
+                  this.removeLocalThread(data.normalizedUrl);
+                }
+              }
+            });
+
+            this.isSyncing = false;
+            this.status = 'connected';
+            this.statusMsg = `${snapshot.size} threads synced`;
+            this.updateUI();
+            updateCacheUI();
+          }, (err) => {
+            console.error('Firestore onSnapshot error:', err);
+            this.isSyncing = false;
+            this.status = 'error';
+            this.statusMsg = err.message || 'Sync error';
+            this.updateUI();
+          });
+        } catch (err) {
+          this.isSyncing = false;
+          this.status = 'error';
+          this.statusMsg = err.message;
+          this.updateUI();
+        }
+      },
+
+      mergeCloudThreadToLocal: function (cloudDoc) {
+        if (!cloudDoc || !cloudDoc.normalizedUrl || !Array.isArray(cloudDoc.videos)) return;
+        const key = cloudDoc.normalizedUrl;
+        const localRaw = localStorage.getItem(CACHE_STORAGE_PREFIX + key);
+        if (localRaw) {
+          try {
+            const local = JSON.parse(localRaw);
+            if (local.timestamp && cloudDoc.timestamp && local.timestamp >= cloudDoc.timestamp) {
+              return; // Local is already as new or newer
+            }
+          } catch (e) { }
+        }
+
+        const entry = {
+          url: cloudDoc.url || key,
+          normalizedUrl: key,
+          videos: cloudDoc.videos,
+          postId: cloudDoc.postId || 'all',
+          timestamp: cloudDoc.timestamp || Date.now()
+        };
+
+        localStorage.setItem(CACHE_STORAGE_PREFIX + key, JSON.stringify(entry));
+
+        let indexList = [];
+        try {
+          indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
+        } catch (e) { indexList = []; }
+
+        indexList = indexList.filter(k => k.normalizedUrl !== key);
+        indexList.unshift({
+          normalizedUrl: key,
+          url: entry.url,
+          count: entry.videos.length,
+          timestamp: entry.timestamp
+        });
+
+        if (indexList.length > 200) {
+          const removed = indexList.splice(200);
+          removed.forEach(r => localStorage.removeItem(CACHE_STORAGE_PREFIX + r.normalizedUrl));
+        }
+        localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
+      },
+
+      removeLocalThread: function (key) {
+        localStorage.removeItem(CACHE_STORAGE_PREFIX + key);
+        let indexList = [];
+        try {
+          indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
+        } catch (e) { indexList = []; }
+        indexList = indexList.filter(k => k.normalizedUrl !== key);
+        localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
+      },
+
+      saveThread: async function (key, entry) {
+        const cookies = localStorage.getItem('lpsg_cookies');
+        if (!cookies || !this.db || !this.activeSyncId || !entry) return;
+        try {
+          const docId = getThreadDocId(key);
+          const payload = {
+            url: entry.url,
+            normalizedUrl: entry.normalizedUrl,
+            videos: entry.videos,
+            postId: entry.postId || 'all',
+            count: entry.videos.length,
+            timestamp: entry.timestamp || Date.now(),
+            clientUpdatedAt: Date.now()
+          };
+          await this.db.collection('users').doc(this.activeSyncId).collection('threads').doc(docId).set(payload, { merge: true });
+        } catch (err) {
+          console.warn('Failed to sync thread to Firestore:', err);
+        }
+      },
+
+      manualSync: async function () {
+        if (!this.db || !this.activeSyncId) {
+          showToast('Configure Firebase first to sync with cloud');
+          return;
+        }
+
+        const icon = btnSyncNow ? btnSyncNow.querySelector('.sync-spin-icon') : null;
+        if (icon) icon.classList.add('spinning');
+        if (btnSyncNow) btnSyncNow.disabled = true;
+
+        try {
+          const snapshot = await this.db.collection('users').doc(this.activeSyncId).collection('threads').get();
+          let count = 0;
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data && data.normalizedUrl && Array.isArray(data.videos)) {
+              this.mergeCloudThreadToLocal(data);
+              count++;
+            }
+          });
+          updateCacheUI();
+          this.status = 'connected';
+          this.statusMsg = `${count} threads synced`;
+          this.updateUI();
+          showToast(`Synced ${count} threads from cloud!`);
+        } catch (err) {
+          showToast(`Sync failed: ${err.message}`);
+        } finally {
+          if (icon) icon.classList.remove('spinning');
+          if (btnSyncNow) btnSyncNow.disabled = false;
+        }
+      },
+
+      purgeCloud: async function () {
+        if (!this.db || !this.activeSyncId) {
+          showToast('No active cloud connection');
+          return;
+        }
+
+        if (!confirm(`Are you sure you want to delete all cloud cached threads for "${this.activeLabel}" from Firestore?`)) {
+          return;
+        }
+
+        try {
+          const snapshot = await this.db.collection('users').doc(this.activeSyncId).collection('threads').get();
+          const batch = this.db.batch();
+          snapshot.forEach(doc => {
+            batch.delete(doc.ref);
+          });
+          await batch.commit();
+          showToast(`Cleared ${snapshot.size} threads from cloud storage`);
+          this.statusMsg = '0 threads in cloud';
+          this.updateUI();
+        } catch (err) {
+          showToast(`Failed to purge cloud cache: ${err.message}`);
+        }
+      },
+
+      onIdentityChange: function () {
+        const cookies = localStorage.getItem('lpsg_cookies');
+        if (!cookies) {
+          if (typeof this.unsubscribe === 'function') {
+            try { this.unsubscribe(); } catch (e) { }
+            this.unsubscribe = null;
+          }
+          this.status = 'disconnected';
+          this.statusMsg = 'LPSG Account Required';
+          this.activeSyncId = null;
+          this.activeLabel = 'No Account Connected';
+          this.updateUI();
+          return;
+        }
+
+        const ident = this.resolveIdentity();
+        if (this.activeSyncId !== ident.id) {
+          this.activeSyncId = ident.id;
+          this.activeLabel = ident.label;
+          if (this.db) {
+            this.attachListener();
+          } else {
+            this.updateUI();
+          }
+        } else {
+          this.activeLabel = ident.label;
+          this.updateUI();
+        }
+      },
+
+      updateUI: function () {
+        const hasCookies = Boolean(localStorage.getItem('lpsg_cookies'));
+        const ident = this.resolveIdentity();
+        if (syncActiveId) {
+          syncActiveId.textContent = hasCookies ? (ident.id || 'Active Account') : 'No Account Connected';
+        }
+        if (syncUserTag) {
+          syncUserTag.textContent = hasCookies ? ident.label : 'LPSG Account Required';
+        }
+
+        // Update header settings dot
+        if (headerSettingsDot) {
+          if (this.status === 'syncing') {
+            headerSettingsDot.className = 'settings-dot syncing';
+          } else if (hasCookies || this.status === 'connected') {
+            headerSettingsDot.className = 'settings-dot connected';
+          } else {
+            headerSettingsDot.className = 'settings-dot';
+          }
+        }
+
+        // Update modal badge if present
+        if (syncStatusBadge && syncBadgeText) {
+          if (!hasCookies) {
+            syncStatusBadge.className = 'session-badge disconnected';
+            syncBadgeText.textContent = 'Account Required';
+          } else {
+            syncStatusBadge.className = `session-badge ${this.status === 'connected' ? 'connected' : (this.status === 'syncing' ? 'verifying' : 'disconnected')}`;
+            syncBadgeText.textContent = this.status === 'connected' ? 'Cloud Connected' : (this.status === 'syncing' ? 'Syncing...' : (this.status === 'error' ? 'Sync Error' : 'Local Only'));
+          }
+        }
+
+      }
+    };
+
+    function triggerManualSync() {
+      cloudSync.manualSync();
+    }
+
+    function purgeCloudCache() {
+      cloudSync.purgeCloud();
     }
 
     function updateCacheUI() {

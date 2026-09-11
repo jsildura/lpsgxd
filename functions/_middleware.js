@@ -8,11 +8,24 @@ const PUBLIC_PATHS = new Set([
   "/api/download",
   "/logo.png",
   "/favicon.ico",
+  "/styles.css",
+  "/terms",
+  "/terms.html",
+  "/privacy",
+  "/privacy.html",
 ]);
 
 export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
+
+  // Redirect legacy or direct legal routes into the integrated app tabs
+  if (url.pathname === "/terms" || url.pathname === "/terms.html") {
+    return Response.redirect(new URL("/?tab=terms", request.url), 302);
+  }
+  if (url.pathname === "/privacy" || url.pathname === "/privacy.html") {
+    return Response.redirect(new URL("/?tab=privacy", request.url), 302);
+  }
 
   // Allow explicitly public paths
   if (PUBLIC_PATHS.has(url.pathname)) {
@@ -66,6 +79,19 @@ function renderLockScreenHtml() {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Disable Devtool in Production Only -->
+  <script>
+    (function () {
+      var h = window.location.hostname;
+      var isLocal = h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h.endsWith('.local') || window.location.port !== '';
+      if (!isLocal) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/disable-devtool@latest';
+        s.setAttribute('disable-devtool-auto', '');
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
   <style>
     :root {
       --bg-canvas: #1a1a1e;
