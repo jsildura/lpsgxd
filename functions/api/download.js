@@ -1,6 +1,10 @@
 // Cloudflare Pages Function: Stream Download Proxy
 // Proxies CDN video files with Content-Disposition: attachment to guarantee a real file download in the browser.
 
+import { fetchWithTimeout } from '../_net.js';
+
+const DOWNLOAD_CONNECT_TIMEOUT_MS = 10000;
+
 export async function onRequestGet(context) {
   try {
     const { searchParams } = new URL(context.request.url);
@@ -18,8 +22,13 @@ export async function onRequestGet(context) {
       return new Response('Invalid target URL', { status: 400 });
     }
 
-    // Security check: Only allow lpsg.com domains
-    if (!parsed.hostname.endsWith('lpsg.com')) {
+    // Security check: Only allow lpsg.com and its subdomains over http(s).
+    // Note: a bare endsWith('lpsg.com') would also match attacker domains like
+    // "evillpsg.com", so match the exact apex or a dot-delimited subdomain.
+    const host = parsed.hostname.toLowerCase();
+    const isLpsgHost = host === 'lpsg.com' || host.endsWith('.lpsg.com');
+    const isHttp = parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    if (!isHttp || !isLpsgHost) {
       return new Response('Forbidden: Domain not permitted', { status: 403 });
     }
 
@@ -37,9 +46,15 @@ export async function onRequestGet(context) {
       fetchHeaders['Range'] = range;
     }
 
-    const cdnResponse = await fetch(targetUrl, {
-      headers: fetchHeaders
-    });
+    // Connect timeout only: fetchWithTimeout clears its abort timer the moment
+    // the response headers arrive, so the streaming body below is never aborted
+    // mid-transfer (a slow-but-progressing download still completes).
+    let cdnResponse;
+    try {
+      cdnResponse = await fetchWithTimeout(targetUrl, { headers: fetchHeaders }, DOWNLOAD_CONNECT_TIMEOUT_MS);
+    } catch (err) {
+      return new Response('Upstream timed out while connecting to CDN', { status: 504 });
+    }
 
     if (!cdnResponse.ok && cdnResponse.status !== 206) {
       return new Response(`Failed to fetch file from CDN (${cdnResponse.status})`, {

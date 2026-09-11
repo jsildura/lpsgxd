@@ -1,3 +1,7 @@
+import { fetchTextWithTimeout } from '../_net.js';
+
+const SESSION_CHECK_TIMEOUT_MS = 8000;
+
 export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
@@ -32,7 +36,7 @@ export async function onRequestPost(context) {
       'Cookie': cookies
     };
 
-    const response = await fetch('https://www.lpsg.com/', { headers });
+    const { response, text: html } = await fetchTextWithTimeout('https://www.lpsg.com/', { headers }, SESSION_CHECK_TIMEOUT_MS);
 
     if (!response.ok) {
       return new Response(JSON.stringify({
@@ -44,8 +48,6 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const html = await response.text();
 
     // Check XenForo logged-in indicators
     const isLoggedIn = html.includes('data-logged-in="true"') || 
