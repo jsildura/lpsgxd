@@ -141,43 +141,6 @@ body {
   transform: none;
 }
 
-.settings-dot {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #64748b;
-  border: 1.5px solid #141418;
-  transition: var(--transition-smooth);
-}
-
-.settings-dot.connected {
-  background: #10b981;
-  box-shadow: 0 0 6px #10b981;
-}
-
-.settings-dot.syncing {
-  background: #f59e0b;
-  box-shadow: 0 0 6px #f59e0b;
-  animation: syncPulse 1.2s infinite ease-in-out;
-}
-
-@keyframes syncPulse {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.35;
-    transform: scale(0.8);
-  }
-}
-
 /* Lock Workspace Header Button */
 .btn-lock-header {
   display: inline-flex;
@@ -1067,6 +1030,7 @@ body {
   align-items: center;
   gap: 12px;
   animation: fadeIn 0.2s ease-out forwards;
+  margin: 0 20px;
 }
 
 @keyframes fadeIn {
@@ -1093,6 +1057,7 @@ body {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.25);
   color: #fca5a5;
+  margin: 0 20px;
 }
 
 .status-banner.success {
@@ -1100,6 +1065,7 @@ body {
   background: rgba(16, 185, 129, 0.08);
   border: 1px solid rgba(16, 185, 129, 0.25);
   color: #6ee7b7;
+  margin: 0 20px;
 }
 
 .status-spinner {
@@ -1126,7 +1092,7 @@ body {
   flex-wrap: wrap;
   gap: 10px;
   padding: 4px 4px;
-  margin-bottom: 14px;
+  margin: 0 20px 14px;
 }
 
 .results-meta-left,
@@ -1285,6 +1251,7 @@ body {
   padding: 16px;
   transition: var(--transition-smooth);
   position: relative;
+  margin: 0 20px;
 }
 
 .video-media-card:hover {
@@ -2243,8 +2210,30 @@ body {
 
   .panel-subline,
   .auth-status-hint,
-  p.empty-state-description {
+  p.empty-state-description,
+  .settings-panel-subtitle,
+  .settings-mini-badge,
+  .btn-reconnect,
+  .dropzone-subtext {
     font-size: 0.75rem;
+  }
+
+  .cookie-dropzone {
+    font-size: 0.75rem;
+    padding: 15px 20px;
+  }
+
+  .settings-tab-panel {
+    gap: 12px;
+  }
+
+  .dropzone-label {
+    font-size: 0.85rem;
+  }
+
+  .settings-panel-title {
+    font-size: 1.10rem;
+    margin-top: 5px;
   }
 
   .panel-headline {
@@ -2287,8 +2276,13 @@ body {
   }
 
   .settings-tab-btn {
+    width: auto;
+    flex: 1 1 0;
+    min-width: fit-content;
     white-space: nowrap;
-    flex-shrink: 0;
+    justify-content: center;
+    padding: 10px 10px;
+    font-size: 0.82rem;
   }
 
   .settings-tab-btn.active::before {

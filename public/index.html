@@ -51,7 +51,6 @@
             </path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span class="settings-dot" id="header-settings-dot" aria-hidden="true"></span>
         </button>
 
         <!-- Lock Workspace Button -->
@@ -122,7 +121,7 @@
             <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span id="cache-count-text">0 cached threads</span>
+            <span id="cache-count-text">0 cached</span>
           </span>
           <button type="button" class="btn-clear-cache" onclick="clearAllCache()" title="Clear cached thread results">
             Clear
@@ -186,7 +185,8 @@
           <button type="button" class="btn-footer-link" onclick="openLegalModal('privacy')">Privacy</button>
         </div>
         <span class="footer-separator footer-right-sep">•</span>
-        <span class="footer-workspace-name">&copy; <span id="footer-year">2026</span> LPSG Fetcher all rights reserved</span>
+        <span class="footer-workspace-name">&copy; <span id="footer-year">2026</span> LPSG Fetcher all rights
+          reserved</span>
       </div>
     </footer>
   </div>
@@ -216,7 +216,7 @@
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
             </svg>
-            <span>Cloud Cache Sync</span>
+            <span>Cloud Sync</span>
           </button>
         </nav>
       </aside>
@@ -328,7 +328,9 @@
               <span id="clear-session-btn-text">Sign Out / Disconnect</span>
             </button>
             <div class="google-signin-terms" id="google-signin-terms" style="display:none;">
-              By continuing, you agree to our <button type="button" class="btn-inline-legal" onclick="openLegalModal('terms')">Terms</button> and <button type="button" class="btn-inline-legal" onclick="openLegalModal('privacy')">Privacy Policy</button>.
+              By continuing, you agree to our <button type="button" class="btn-inline-legal"
+                onclick="openLegalModal('terms')">Terms</button> and <button type="button" class="btn-inline-legal"
+                onclick="openLegalModal('privacy')">Privacy Policy</button>.
             </div>
           </div>
         </div>
@@ -336,7 +338,7 @@
         <!-- Tab 2: Cloud Cache Sync -->
         <div class="settings-tab-panel" id="tab-panel-sync" style="display:none;">
           <div class="settings-panel-header">
-            <h2 class="settings-panel-title">Cloud Cache Sync</h2>
+            <h2 class="settings-panel-title">Cloud Sync</h2>
             <div class="settings-panel-subtitle">Automatically synchronize cached threads across devices</div>
           </div>
 
@@ -352,12 +354,11 @@
                 real-time.</div>
             </div>
             <button type="button" class="btn-sync-action" id="btn-sync-now" onclick="triggerManualSync()"
-              title="Pull latest cache from Firestore">
+              title="Sync Now">
               <svg class="sync-spin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2">
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
               </svg>
-              <span>Sync Now</span>
             </button>
           </div>
 
@@ -384,14 +385,17 @@
     <div class="legal-dialog plain-legal-dialog" onclick="event.stopPropagation()">
       <header class="legal-dialog-header">
         <div class="plain-legal-tabs" role="tablist">
-          <button type="button" class="plain-legal-tab-btn active" id="legal-tab-terms-btn" onclick="switchLegalDialogTab('terms')">
+          <button type="button" class="plain-legal-tab-btn active" id="legal-tab-terms-btn"
+            onclick="switchLegalDialogTab('terms')">
             Terms of Service
           </button>
-          <button type="button" class="plain-legal-tab-btn" id="legal-tab-privacy-btn" onclick="switchLegalDialogTab('privacy')">
+          <button type="button" class="plain-legal-tab-btn" id="legal-tab-privacy-btn"
+            onclick="switchLegalDialogTab('privacy')">
             Privacy Policy
           </button>
         </div>
-        <button type="button" class="btn-close-modal" onclick="closeLegalModal()" title="Close" aria-label="Close legal modal">
+        <button type="button" class="btn-close-modal" onclick="closeLegalModal()" title="Close"
+          aria-label="Close legal modal">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -407,45 +411,62 @@
           <div class="plain-legal-meta">Effective Date: September 2026 • Version 2.0</div>
 
           <div class="plain-legal-content">
-            <p><strong>Notice:</strong> LPSG Fetcher is an independent browser-based utility tool designed for personal media streaming and link resolution. It is not affiliated with, endorsed by, or associated with LPSG.com or XenForo Ltd.</p>
+            <p><strong>Notice:</strong> LPSG Fetcher is an independent browser-based utility tool designed for personal
+              media streaming and link resolution. It is not affiliated with, endorsed by, or associated with LPSG.com
+              or XenForo Ltd.</p>
 
             <h3>1. Acceptance of Terms</h3>
-            <p>By accessing or using the LPSG Fetcher workspace ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the application.</p>
+            <p>By accessing or using the LPSG Fetcher workspace ("the Service"), you agree to be bound by these Terms of
+              Service. If you do not agree to these terms, please do not use the application.</p>
 
             <h3>2. Permitted Use &amp; Purpose</h3>
-            <p>The Service is provided solely as a client-side media resolver utility to help authorized users view and inspect direct content delivery network (CDN) media attachments from forum threads. You agree to use the Service only for:</p>
+            <p>The Service is provided solely as a client-side media resolver utility to help authorized users view and
+              inspect direct content delivery network (CDN) media attachments from forum threads. You agree to use the
+              Service only for:</p>
             <ul>
               <li>Personal, non-commercial viewing of content you are authorized to access.</li>
               <li>Research, archival, or media management under personal fair-use principles.</li>
             </ul>
 
             <h3>3. Independent Operation &amp; Third-Party Services</h3>
-            <p>LPSG Fetcher does not host, store, or duplicate video files on central servers. Video streams and attachments are served directly from third-party CDN origins. We have no control over, and assume no responsibility for, content published on external platforms.</p>
+            <p>LPSG Fetcher does not host, store, or duplicate video files on central servers. Video streams and
+              attachments are served directly from third-party CDN origins. We have no control over, and assume no
+              responsibility for, content published on external platforms.</p>
 
             <h3>4. User Account &amp; Authentication Credentials</h3>
             <p>If you choose to import your LPSG authentication cookies to access restricted or age-gated threads:</p>
             <ul>
               <li>You represent and warrant that you are the legitimate owner of the associated forum account.</li>
-              <li>You are solely responsible for ensuring your use complies with the terms and community rules of the source platform.</li>
-              <li>Your session cookies remain stored locally on your device in your browser's local storage and are never collected, sold, or shared with third parties.</li>
+              <li>You are solely responsible for ensuring your use complies with the terms and community rules of the
+                source platform.</li>
+              <li>Your session cookies remain stored locally on your device in your browser's local storage and are
+                never collected, sold, or shared with third parties.</li>
             </ul>
 
             <h3>5. Prohibited Conduct</h3>
             <p>You agree not to:</p>
             <ul>
-              <li>Use the application to conduct denial-of-service (DoS) attacks, aggressive bulk scraping, or network spam against LPSG or origin servers.</li>
-              <li>Attempt to bypass security controls or reverse-engineer access restrictions for accounts you do not own.</li>
-              <li>Redistribute copyrighted media without appropriate rights or authorization from original content creators.</li>
+              <li>Use the application to conduct denial-of-service (DoS) attacks, aggressive bulk scraping, or network
+                spam against LPSG or origin servers.</li>
+              <li>Attempt to bypass security controls or reverse-engineer access restrictions for accounts you do not
+                own.</li>
+              <li>Redistribute copyrighted media without appropriate rights or authorization from original content
+                creators.</li>
             </ul>
 
             <h3>6. Disclaimer of Warranties</h3>
-            <p>The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express or implied. We do not guarantee uninterrupted uptime, continuous compatibility with external forum software changes, or error-free video stream parsing.</p>
+            <p>The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether
+              express or implied. We do not guarantee uninterrupted uptime, continuous compatibility with external forum
+              software changes, or error-free video stream parsing.</p>
 
             <h3>7. Limitation of Liability</h3>
-            <p>To the maximum extent permitted by applicable law, the creators and maintainers of LPSG Fetcher shall not be liable for any indirect, incidental, special, or consequential damages resulting from your access to or inability to use the Service.</p>
+            <p>To the maximum extent permitted by applicable law, the creators and maintainers of LPSG Fetcher shall not
+              be liable for any indirect, incidental, special, or consequential damages resulting from your access to or
+              inability to use the Service.</p>
 
             <h3>8. Changes to Terms</h3>
-            <p>We reserve the right to modify these Terms at any time. Continued use of the workspace after changes are posted constitutes your acceptance of the revised Terms.</p>
+            <p>We reserve the right to modify these Terms at any time. Continued use of the workspace after changes are
+              posted constitutes your acceptance of the revised Terms.</p>
           </div>
         </div>
 
@@ -455,24 +476,34 @@
           <div class="plain-legal-meta">Effective Date: September 2026 • Version 2.0</div>
 
           <div class="plain-legal-content">
-            <p><strong>Notice:</strong> LPSG Fetcher operates on a privacy-first principle: no analytics trackers, no advertisements, and no harvesting or sale of personal data.</p>
+            <p><strong>Notice:</strong> LPSG Fetcher operates on a privacy-first principle: no analytics trackers, no
+              advertisements, and no harvesting or sale of personal data.</p>
 
             <h3>1. Overview &amp; Core Philosophy</h3>
-            <p>This Privacy Policy describes how LPSG Fetcher ("we", "us", or "our") processes information when you use our web workspace. Data processing happens in your browser whenever possible, and your session credentials remain under your direct control.</p>
+            <p>This Privacy Policy describes how LPSG Fetcher ("we", "us", or "our") processes information when you use
+              our web workspace. Data processing happens in your browser whenever possible, and your session credentials
+              remain under your direct control.</p>
 
             <h3>2. Data We Do NOT Collect</h3>
             <ul>
-              <li><strong>No Tracking Cookies:</strong> We do not set marketing, profiling, or cross-site tracking cookies.</li>
-              <li><strong>No Personal Profiles:</strong> We do not construct user behavioral profiles, track your browsing history, or monitor searches.</li>
-              <li><strong>No Telemetry / Analytics:</strong> No third-party analytics trackers (such as Google Analytics or Facebook Pixels) are embedded in this application.</li>
+              <li><strong>No Tracking Cookies:</strong> We do not set marketing, profiling, or cross-site tracking
+                cookies.</li>
+              <li><strong>No Personal Profiles:</strong> We do not construct user behavioral profiles, track your
+                browsing history, or monitor searches.</li>
+              <li><strong>No Telemetry / Analytics:</strong> No third-party analytics trackers (such as Google Analytics
+                or Facebook Pixels) are embedded in this application.</li>
             </ul>
 
             <h3>3. How Session Cookies Are Handled</h3>
             <p>When you upload your <code>cookies.txt</code> session export:</p>
             <ul>
-              <li><strong>Client-Side Storage:</strong> Cookies are saved in your browser's sandboxed <code>localStorage</code> on your own device.</li>
-              <li><strong>Transient Proxy Requests:</strong> When resolving restricted forum threads, cookie headers are forwarded to LPSG origin servers purely to authenticate media subrequests.</li>
-              <li><strong>No Server Database Storage:</strong> Our Cloudflare Pages serverless functions do not store, log, or persist your cookie credentials to any permanent database.</li>
+              <li><strong>Client-Side Storage:</strong> Cookies are saved in your browser's sandboxed
+                <code>localStorage</code> on your own device.
+              </li>
+              <li><strong>Transient Proxy Requests:</strong> When resolving restricted forum threads, cookie headers are
+                forwarded to LPSG origin servers purely to authenticate media subrequests.</li>
+              <li><strong>No Server Database Storage:</strong> Our Cloudflare Pages serverless functions do not store,
+                log, or persist your cookie credentials to any permanent database.</li>
             </ul>
 
             <h3>4. Cloud Cache Sync (Optional)</h3>
@@ -480,21 +511,26 @@
             <ul>
               <li>Thread metadata and direct video URLs are stored in your own Google Firebase Firestore project.</li>
               <li>Data is organized under an isolated collection keyed to your sync identity.</li>
-              <li>You can click <strong>"Purge Cloud Cache"</strong> at any time to immediately delete all cached thread records from Firestore.</li>
+              <li>You can click <strong>"Purge Cloud Cache"</strong> at any time to immediately delete all cached thread
+                records from Firestore.</li>
             </ul>
 
             <h3>5. Device &amp; Workspace Security</h3>
-            <p>The workspace includes a dedicated password lock screen to secure the interface on shared or personal devices. Access tokens are encrypted and verified using cryptographic hashing algorithms (SHA-256).</p>
+            <p>The workspace includes a dedicated password lock screen to secure the interface on shared or personal
+              devices. Access tokens are encrypted and verified using cryptographic hashing algorithms (SHA-256).</p>
 
             <h3>6. Data Deletion &amp; Control</h3>
             <p>You have complete control over your data at all times:</p>
             <ul>
-              <li><strong>Clear Local Storage:</strong> Click <strong>"Sign Out / Disconnect"</strong> in the settings modal to instantly purge all stored LPSG cookies and session data from your browser.</li>
-              <li><strong>Purge Cloud Cache:</strong> Click <strong>"Purge Cloud Cache"</strong> in the Cloud Cache Sync tab to delete all synchronized thread caches.</li>
+              <li><strong>Clear Local Storage:</strong> Click <strong>"Sign Out / Disconnect"</strong> in the settings
+                modal to instantly purge all stored LPSG cookies and session data from your browser.</li>
+              <li><strong>Purge Cloud Cache:</strong> Click <strong>"Purge Cloud Cache"</strong> in the Cloud Cache Sync
+                tab to delete all synchronized thread caches.</li>
             </ul>
 
             <h3>7. Contact &amp; Updates</h3>
-            <p>We may update this policy periodically to reflect enhancements in application functionality. Continued use of the workspace after updates signifies your review and consent.</p>
+            <p>We may update this policy periodically to reflect enhancements in application functionality. Continued
+              use of the workspace after updates signifies your review and consent.</p>
           </div>
         </div>
       </main>
@@ -679,7 +715,6 @@
 
     // Settings Modal Elements
     const settingsModal = document.getElementById('settings-modal');
-    const headerSettingsDot = document.getElementById('header-settings-dot');
     const tabBtnAccount = document.getElementById('tab-btn-account');
     const tabBtnSync = document.getElementById('tab-btn-sync');
     const tabPanelAccount = document.getElementById('tab-panel-account');
@@ -719,11 +754,17 @@
         tabPanelSync.style.display = 'flex';
         tabPanelAccount.style.display = 'none';
         cloudSync.updateUI();
+        if (typeof tabBtnSync.scrollIntoView === 'function') {
+          tabBtnSync.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
       } else {
         tabBtnAccount.classList.add('active');
         tabBtnSync.classList.remove('active');
         tabPanelAccount.style.display = 'flex';
         tabPanelSync.style.display = 'none';
+        if (typeof tabBtnAccount.scrollIntoView === 'function') {
+          tabBtnAccount.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
       }
 
       const settingsContent = document.querySelector('.settings-content');
@@ -901,9 +942,6 @@
         if (authStatusHint) {
           authStatusHint.textContent = state.user ? `Authenticated (${state.user})` : 'Authenticated mode';
         }
-        if (headerSettingsDot) {
-          headerSettingsDot.className = 'settings-dot connected';
-        }
 
         if (reconnectBtn) {
           reconnectBtn.style.display = 'inline-flex';
@@ -968,9 +1006,6 @@
         }
         if (authStatusHint) {
           authStatusHint.textContent = 'Guest access mode';
-        }
-        if (headerSettingsDot) {
-          headerSettingsDot.className = 'settings-dot';
         }
 
         if (reconnectBtn) {
@@ -1800,17 +1835,6 @@
           syncUserTag.textContent = hasCookies ? ident.label : 'LPSG Account Required';
         }
 
-        // Update header settings dot
-        if (headerSettingsDot) {
-          if (this.status === 'syncing') {
-            headerSettingsDot.className = 'settings-dot syncing';
-          } else if (hasCookies || this.status === 'connected') {
-            headerSettingsDot.className = 'settings-dot connected';
-          } else {
-            headerSettingsDot.className = 'settings-dot';
-          }
-        }
-
         // Update modal badge if present
         if (syncStatusBadge && syncBadgeText) {
           if (!hasCookies) {
@@ -1842,7 +1866,7 @@
         const indexList = JSON.parse(localStorage.getItem(CACHE_INDEX_KEY) || '[]');
         if (indexList.length > 0) {
           cacheGroup.style.display = 'inline-flex';
-          cacheText.textContent = `${indexList.length} cached thread${indexList.length > 1 ? 's' : ''}`;
+          cacheText.textContent = `${indexList.length} cached${indexList.length > 1 ? 's' : ''}`;
         } else {
           cacheGroup.style.display = 'none';
         }
